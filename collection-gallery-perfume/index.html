@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="搜尋與整理香香的展示館。">
+  <title>香香收藏</title>
+
+  <!-- CDN 依賴：若要離線使用，可將這三項下載到未來的 assets 資料夾再更換路徑。 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    /* Tailwind 主題備註：品牌色集中在這裡，日後可快速更換整站色彩。 */
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#FBFBFA', ink: '#2C302E', monet: '#8A9A86',
+            water: '#9EA8B6', petal: '#E6C5B8', mist: '#F2F3F0'
+          },
+          boxShadow: {
+            soft: '0 12px 36px rgba(71, 81, 74, .08)',
+            glow: '0 18px 46px rgba(138, 154, 134, .20)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      /* 設計 Token：若不使用 Tailwind，可從此處調整背景、文字與動態時間。 */
+      --canvas: #FBFBFA;
+      --ink: #2C302E;
+      --primary: #8A9A86;
+      --secondary: #9EA8B6;
+      --accent: #E6C5B8;
+      --ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(230,197,184,.22), transparent 26rem),
+        radial-gradient(circle at 92% 20%, rgba(158,168,182,.16), transparent 28rem),
+        var(--canvas);
+      font-family: Inter, "Noto Sans TC", system-ui, -apple-system, sans-serif;
+    }
+
+    /*
+      Reference Window Light Effect
+      - ::after 是霧灰牆面，讓白色窗光有足夠對比。
+      - ::before 同時承載柔白光暈與 2×3 六格窗框陰影；圖層刻意大於主要亮區，避免 blur 在 2/3 處被裁切。
+      - 不使用 clip-path 或硬性色塊邊界，所有外緣皆以長距離漸層自然淡出。
+    */
+    #main-content {
+      --window-frame-half: 7px;
+      /* Main 牆面顏色：左／中／右。加深左側冷灰，可提高白色窗光的對比。 */
+      --main-wall-left: #f2edde;
+      --main-wall-middle: #e2e1dd;
+      --main-wall-right: #dcd9cf;
+      /* 六格窗面本身的範圍；光暈可超出這個範圍繼續自然淡出。 */
+      --window-grid-width: 80%;
+      --window-grid-height: 80%;
+      --window-grid-x: 4%;
+      --window-grid-y: 12%;
+      position: relative;
+      isolation: isolate;
+    }
+    #main-content::after {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      inset: 0 auto 0 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      pointer-events: none;
+      background: linear-gradient(
+        90deg,
+        var(--main-wall-left) 0%,
+        var(--main-wall-middle) 48%,
+        var(--main-wall-right) 100%
+      );
+    }
+    #main-content::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      top: -3rem;
+      left: -12%;
+      width: 96%;
+      /* 高度獨立於 60–67% 的寬度核心，維持較長的直向投影。 */
+      height: clamp(68rem, 105vw, 112rem);
+      pointer-events: none;
+      background:
+        /* 1 條垂直中線：分成左右 2 欄。 */
+        linear-gradient(
+          90deg,
+          transparent 0 calc(50% - var(--window-frame-half)),
+          rgba(70,75,73,.36) calc(50% - var(--window-frame-half)) calc(50% + var(--window-frame-half)),
+          transparent calc(50% + var(--window-frame-half)) 100%
+        ),
+        /* 第 1 條水平線。 */
+        linear-gradient(
+          180deg,
+          transparent 0 calc(33.333% - var(--window-frame-half)),
+          rgba(70,75,73,.31) calc(33.333% - var(--window-frame-half)) calc(33.333% + var(--window-frame-half)),
+          transparent calc(33.333% + var(--window-frame-half)) 100%
+        ),
+        /* 第 2 條水平線：上下共分成 3 列。 */
+        linear-gradient(
+          180deg,
+          transparent 0 calc(66.666% - var(--window-frame-half)),
+          rgba(70,75,73,.31) calc(66.666% - var(--window-frame-half)) calc(66.666% + var(--window-frame-half)),
+          transparent calc(66.666% + var(--window-frame-half)) 100%
+        ),
+        radial-gradient(
+          ellipse 68% 62% at 22% 42%,
+          rgba(255,255,253,.94) 0%,
+          rgba(255,255,253,.78) 38%,
+          rgba(255,255,253,.43) 57%,
+          rgba(255,255,253,.14) 72%,
+          transparent 90%
+        );
+      /* 前三層窗框只繪製在有限窗面內，避免垂直中線延伸到下方其他區塊。 */
+      background-size:
+        var(--window-grid-width) var(--window-grid-height),
+        var(--window-grid-width) var(--window-grid-height),
+        var(--window-grid-width) var(--window-grid-height),
+        100% 100%;
+      background-position:
+        var(--window-grid-x) var(--window-grid-y),
+        var(--window-grid-x) var(--window-grid-y),
+        var(--window-grid-x) var(--window-grid-y),
+        0 0;
+      background-repeat: no-repeat;
+      filter: blur(11px);
+      opacity: .78;
+      transform: rotate(-3deg) skewY(5deg);
+      transform-origin: 12% 10%;
+      -webkit-mask-image: radial-gradient(ellipse 76% 72% at 22% 42%, #000 0%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.42) 70%, transparent 94%);
+      mask-image: radial-gradient(ellipse 76% 72% at 22% 42%, #000 0%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.42) 70%, transparent 94%);
+    }
+
+    @media (max-width: 639px) {
+      #main-content {
+        --window-frame-half: 5px;
+        --window-grid-width: 68%;
+        --window-grid-height: 72%;
+        --window-grid-x: 3%;
+        --window-grid-y: 3%;
+      }
+      #main-content::before {
+        top: -1rem;
+        left: -24%;
+        width: 112%;
+        height: 72rem;
+        filter: blur(9px);
+        opacity: .56;
+      }
+    }
+
+    [v-cloak] { display: none; }
+    button, [role="button"], .bottle-scene { cursor: pointer; touch-action: manipulation; }
+
+    .skip-link {
+      position: fixed; z-index: 100; left: 1rem; top: 1rem; transform: translateY(-180%);
+      border-radius: 999px; background: var(--ink); color: white; padding: .75rem 1rem;
+      transition: transform .2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* 所有互動元件共用清楚的鍵盤焦點。 */
+    :focus-visible { outline: 3px solid rgba(158,168,182,.72); outline-offset: 3px; }
+    .field {
+      width: 100%; border: 1px solid #DDE2DC; border-radius: 1rem;
+      background: rgba(255,255,255,.86); padding: .8rem 1rem;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .field:hover { border-color: #B9C3B7; }
+    .field:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 4px rgba(158,168,182,.18); background: #fff; }
+    .field-error { border-color: #B56D6D; }
+
+    /*
+      3D 收藏卡：參考翻面卡概念，但改為響應式尺寸與莫內色系。
+      --card-height 可統一調整卡片高度；若內容增加，建議同步加高。
+    */
+    .perfume-flip-card {
+      --card-height: 28rem;
+      /* 線段與內層表面之間保留的可見寬度。 */
+      --card-border-size: 2px;
+      min-width: 0; height: var(--card-height); overflow: visible;
+      perspective: 1200px; -webkit-perspective: 1200px;
+    }
+    .perfume-card-content {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+      /* 容器不再旋轉；讓完成翻面的背面回到 0deg，避免文字經 GPU 兩次旋轉而模糊。 */
+    }
+    .perfume-card-face {
+      position: absolute; inset: 0; overflow: hidden; border-radius: 0;
+      border: 1px solid rgba(138,154,134,.22);
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+      box-shadow: 0 14px 28px rgba(44,48,46,.11);
+      transition: transform 500ms var(--ease), opacity 120ms ease;
+      will-change: transform;
+    }
+    .perfume-card-front {
+      display: grid; place-items: center; padding: var(--card-border-size); background: #EEF0F1; border: 0; isolation: isolate;
+      transform: rotateY(0deg); -webkit-transform: rotateY(0deg);
+      opacity: 1; pointer-events: auto;
+    }
+    /* 原始線段 Border：只在 Hover／Focus 時繞卡片中心旋轉。 */
+    .perfume-card-front::before {
+      content: ''; position: absolute; z-index: 0; left: 50%; top: 50%; width: 42%; height: 160%;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, #808991, #C3C8CC, #808991, transparent);
+      transform: translate(-50%, -50%) rotate(0deg);
+      animation: card-line-rotation 5.5s infinite linear;
+      animation-play-state: paused; opacity: 0; transition: opacity 180ms ease;
+    }
+    .perfume-front-surface {
+      position: relative; z-index: 1; width: 100%; height: 100%; display: grid; place-items: center; padding: 2rem;
+      border-radius: 0; background: #FBFBFA; text-align: center;
+    }
+    .perfume-card-back {
+      transform: rotateY(180deg); -webkit-transform: rotateY(180deg);
+      background: #2C302E; opacity: 0; pointer-events: none;
+    }
+    /* 各面自行翻轉：背面最後停在 0deg，文字會以清晰的 2D 平面渲染。 */
+    .perfume-card-content.is-flipped .perfume-card-front { transform: rotateY(-180deg); -webkit-transform: rotateY(-180deg); opacity: 0; pointer-events: none; }
+    .perfume-card-content.is-flipped .perfume-card-back { transform: rotateY(0deg); -webkit-transform: rotateY(0deg); opacity: 1; pointer-events: auto; }
+    .perfume-back-surface {
+      position: relative; width: 100%; height: 100%; overflow: hidden;
+      background: linear-gradient(145deg, #8A9A86, #9EA8B6);
+    }
+    .perfume-back-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .perfume-back-fallback { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(145deg, #E7E9E6, #BDC4CB); }
+    .perfume-back-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(44,48,46,.18), rgba(44,48,46,.74) 42%, rgba(44,48,46,.94));
+    }
+    .perfume-back-info {
+      position: relative; z-index: 2; height: 100%; overflow-y: auto; color: white; scrollbar-width: thin;
+      pointer-events: none;
+      transform: translateZ(0); -webkit-transform: translateZ(0);
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    @keyframes card-line-rotation {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* 精品藝廊模式：只有正在互動的卡片播放邊線，降低多卡同時動態的視覺噪音。 */
+    .perfume-flip-card:hover .perfume-card-front::before,
+    .perfume-flip-card:focus-within .perfume-card-front::before {
+      animation-play-state: running; opacity: 1;
+    }
+
+    /* Hover 只提供浮起回饋；翻面必須點擊整張正面，避免返回鍵被 Hover 狀態覆蓋。 */
+    @media (hover: hover) and (pointer: fine) {
+      .perfume-flip-card:hover .perfume-card-face { box-shadow: 0 20px 40px rgba(44,48,46,.17); }
+    }
+
+    /* 圖片備援：CSS 玻璃瓶。顏色可由 --bottle-tint 個別覆寫。 */
+    .bottle-scene {
+      position: relative; display: grid; place-items: center; min-height: 15rem;
+      overflow: hidden; isolation: isolate; cursor: pointer;
+    }
+    .bottle-scene::before {
+      content: ''; position: absolute; width: 13rem; height: 13rem; border-radius: 999px;
+      background: radial-gradient(circle, rgba(230,197,184,.36), rgba(158,168,182,.08) 58%, transparent 70%);
+      filter: blur(2px); z-index: -1;
+    }
+    .glass-bottle {
+      --bottle-tint: 138,154,134; position: relative; width: 7.2rem; height: 9.2rem;
+      margin-top: 2.4rem; border: 1px solid rgba(255,255,255,.88);
+      border-radius: 2rem 2rem .9rem .9rem;
+      background:
+        linear-gradient(105deg, rgba(255,255,255,.72) 4%, rgba(255,255,255,.12) 28%, rgba(var(--bottle-tint),.25) 62%, rgba(255,255,255,.48)),
+        linear-gradient(to top, rgba(var(--bottle-tint),.28), rgba(255,255,255,.18));
+      box-shadow: inset 8px 0 14px rgba(255,255,255,.42), inset -7px -7px 18px rgba(var(--bottle-tint),.18), 0 18px 28px rgba(44,48,46,.15);
+      backdrop-filter: blur(4px); animation: bottle-sway 4.5s infinite var(--ease);
+      transform-origin: 50% 90%;
+    }
+    .glass-bottle::before {
+      content: ''; position: absolute; left: 1.05rem; top: .85rem; width: .65rem; height: 5.5rem;
+      border-radius: 999px; background: linear-gradient(rgba(255,255,255,.86), rgba(255,255,255,.08)); filter: blur(.4px);
+    }
+    .glass-bottle::after {
+      content: ''; position: absolute; inset: auto .7rem .8rem; height: 2.2rem; border-radius: 50%;
+      background: rgba(var(--bottle-tint),.22); filter: blur(1px);
+    }
+    .bottle-cap {
+      position: absolute; width: 3.25rem; height: 2.25rem; left: 50%; top: -2rem; transform: translateX(-50%);
+      border-radius: .65rem .65rem .25rem .25rem;
+      background: linear-gradient(110deg, #69736A, #9AA59B 47%, #59625A);
+      box-shadow: inset 5px 0 7px rgba(255,255,255,.22), 0 5px 8px rgba(44,48,46,.16);
+    }
+    .bottle-neck { position: absolute; width: 2.2rem; height: 1.15rem; left: 50%; top: -2.65rem; transform: translateX(-50%); background: rgba(158,168,182,.7); border-radius: .25rem; }
+    .bottle-label {
+      position: absolute; z-index: 2; inset: 3rem .8rem auto; min-height: 2.85rem; display: grid; place-items: center;
+      border: 1px solid rgba(138,154,134,.28); background: rgba(251,251,250,.76); backdrop-filter: blur(5px);
+      color: #4D574F; font: 600 .64rem/1.25 Georgia, serif; letter-spacing: .11em; text-align: center; text-transform: uppercase;
+    }
+    .spray-particle {
+      position: absolute; z-index: 4; left: 50%; top: -2.7rem; width: .55rem; height: .55rem;
+      border-radius: 50%; background: rgba(var(--particle, 158,168,182),.7); pointer-events: none;
+      animation: spray-out .9s ease-out forwards;
+    }
+    .is-shaking { animation: bottle-shake .42s ease-in-out !important; }
+    @keyframes bottle-sway { 0%,100% { transform: rotate(-2.5deg) translateX(0); } 50% { transform: rotate(2.5deg) translateX(2px); } }
+    @keyframes bottle-shake { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-7deg) translateX(-2px); } 40% { transform: rotate(7deg) translateX(2px); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(5deg); } }
+    @keyframes spray-out { from { transform: translate(0,0) scale(.7); opacity: .9; } to { transform: translate(var(--spray-x), var(--spray-y)) scale(1.8); opacity: 0; } }
+
+    .card-enter-active, .card-leave-active { transition: opacity .28s ease, transform .32s var(--ease); }
+    .card-enter-from, .card-leave-to { opacity: 0; transform: translateY(10px) scale(.98); }
+
+    /* 新增表單只在觸發後展開；使用 opacity + transform 避免版面動畫卡頓。 */
+    .form-reveal-enter-active { transition: opacity .3s ease, transform .4s var(--ease); }
+    .form-reveal-leave-active { transition: opacity .2s ease, transform .24s ease; }
+    .form-reveal-enter-from, .form-reveal-leave-to { opacity: 0; transform: translateY(18px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .perfume-card-front::before { animation: none !important; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen antialiased">
+  <a href="#main-content" class="skip-link">跳至主要內容</a>
+  <div id="app" v-cloak>
+    <header class="border-b border-monet/15 bg-canvas/80 backdrop-blur-xl">
+      <div class="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+        <div class="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
+          <div class="max-w-3xl">
+            <div class="mb-5 flex items-center gap-3 text-sm font-semibold tracking-[.2em] text-monet">
+              <span class="grid h-10 w-10 place-items-center rounded-full border border-monet/20 bg-white/70" aria-hidden="true"><i data-lucide="flower-2" class="h-5 w-5"></i></span>
+              Fragrance Collection
+            </div>
+            <p class="mb-3 font-serif text-lg italic text-water">Where scents linger and memories live.</p>
+            <h1 class="text-balance font-serif text-4xl leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">The Perfume Gallery</h1>
+            <p class="mt-5 max-w-2xl text-base leading-7 text-ink/65 sm:text-lg">隨香氣漫步，留住每一道香氣記憶。</p>
+          </div>
+          <button type="button" @click="goToForm" :aria-expanded="isFormOpen" aria-controls="collection-form" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-monet px-6 py-3 font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#748571] hover:shadow-glow active:translate-y-0">
+            <i data-lucide="plus" class="h-5 w-5" aria-hidden="true"></i>新增收藏
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="mx-auto max-w-[1600px] space-y-16 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      <!-- 搜尋與篩選：手機可橫向捲動標籤，避免壓縮文字。 -->
+      <section aria-labelledby="collection-title">
+        <div class="mb-7 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <p class="mb-2 text-sm font-semibold tracking-[.18em] text-monet">COLLECTION</p>
+            <h2 id="collection-title" class="font-serif text-3xl sm:text-4xl">香水收藏冊</h2>
+          </div>
+          <div class="relative w-full xl:max-w-md">
+            <label for="search" class="sr-only">搜尋香水、品牌或香調</label>
+            <i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" aria-hidden="true"></i>
+            <input id="search" v-model.trim="searchTerm" type="search" class="field min-h-12 pl-12" placeholder="搜尋香水、品牌或香調…">
+          </div>
+        </div>
+
+        <div class="-mx-1 mb-10 flex gap-2 overflow-x-auto px-1 pb-3" aria-label="依香調篩選">
+          <button v-for="category in filterCategories" :key="category" type="button" @click="activeCategory = category"
+            :aria-pressed="activeCategory === category"
+            class="min-h-10 shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold transition-all duration-300"
+            :class="activeCategory === category ? 'border-monet bg-monet text-white shadow-soft' : 'border-monet/20 bg-white/70 text-ink/65 hover:border-monet/50 hover:text-ink'">
+            {{ category }}
+          </button>
+        </div>
+
+        <transition-group v-if="filteredPerfumes.length" name="card" tag="div" class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <article v-for="perfume in visiblePerfumes" :key="perfume.id" class="perfume-flip-card group" :aria-label="`${perfume.brand} ${perfume.name} 收藏卡`">
+            <div class="perfume-card-content" :class="{ 'is-flipped': flippedIds.includes(perfume.id) }">
+              <!-- 正面：依需求只呈現品牌、名稱與 #808991 動態邊線。 -->
+              <div class="perfume-card-face perfume-card-front">
+                <button type="button" @click="toggleCardFlip(perfume.id)" :aria-pressed="flippedIds.includes(perfume.id)" :aria-label="`翻轉查看 ${perfume.brand} ${perfume.name} 的完整資料`" :tabindex="flippedIds.includes(perfume.id) ? -1 : 0" class="perfume-front-surface group/front">
+                  <span>
+                    <span class="block text-xs font-semibold uppercase tracking-[.28em] text-[#808991]">{{ perfume.brand }}</span>
+                    <span class="mx-auto my-6 block h-px w-12 bg-[#808991]/50 transition-all duration-300 group-hover/front:w-20"></span>
+                    <span class="block font-serif text-3xl leading-tight text-ink">{{ perfume.name }}</span>
+                  </span>
+                </button>
+              </div>
+
+              <!-- 背面：滿版圖片 + 香調、特性、評分、詳細介紹與操作。 -->
+              <div class="perfume-card-face perfume-card-back">
+                <div class="perfume-back-surface">
+                  <img v-if="perfume.image && !imageErrors[perfume.id]" :src="perfume.image" :alt="`${perfume.brand} ${perfume.name} 香水滿版圖片`" loading="lazy" class="perfume-back-image" @error="markImageFailed(perfume.id)">
+                  <div v-else class="perfume-back-fallback" aria-hidden="true">
+                    <div class="glass-bottle scale-110" :style="{ '--bottle-tint': perfume.tint }"><span class="bottle-neck"></span><span class="bottle-cap"></span><span class="bottle-label">{{ perfume.brand }}<br>{{ perfume.name }}</span></div>
+                  </div>
+                  <div class="perfume-back-overlay" aria-hidden="true"></div>
+                  <!-- 整張背面的透明語意按鈕；資訊層不攔截點擊，編輯鍵除外。 -->
+                  <button type="button" @click="toggleCardFlip(perfume.id)" :tabindex="flippedIds.includes(perfume.id) ? 0 : -1" class="absolute inset-0 z-[1] cursor-pointer rounded-[inherit]" :aria-label="`翻回 ${perfume.name} 卡片正面`"><span class="sr-only">翻回卡片正面</span></button>
+                  <div class="perfume-back-info flex flex-col p-6">
+                    <div class="flex items-start justify-between gap-3">
+                      <div><p class="text-xs font-semibold uppercase tracking-[.2em] text-white/75">{{ perfume.brand }}</p><h3 class="mt-2 font-serif text-2xl leading-tight">{{ perfume.name }}</h3></div>
+                      <button type="button" @click.stop="startEdit(perfume)" :tabindex="flippedIds.includes(perfume.id) ? 0 : -1" class="pointer-events-auto relative z-10 grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/35 bg-white/15 text-white backdrop-blur transition-all duration-300 hover:bg-white hover:text-ink" :aria-label="`編輯 ${perfume.name}`"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="mt-5 flex items-center justify-between gap-3">
+                      <div><p class="text-[.65rem] font-semibold tracking-[.16em] text-white/60">香調</p><p class="mt-1 text-sm font-semibold">{{ perfume.category }}</p></div>
+                      <div class="flex items-center gap-1" :aria-label="`喜好程度 ${perfume.rating} 顆星，共 5 顆`">
+                        <svg v-for="star in 5" :key="star" viewBox="0 0 24 24" class="h-4 w-4" :class="star <= perfume.rating ? 'text-petal' : 'text-white/35'" :fill="star <= perfume.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.165.75a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.61 1.878l.882 5.14a.53.53 0 0 1-.77.56l-4.618-2.428a2.12 2.12 0 0 0-1.974 0l-4.618 2.428a.53.53 0 0 1-.77-.56l.882-5.14a2.12 2.12 0 0 0-.61-1.878L2.16 9.788a.53.53 0 0 1 .294-.904l5.165-.75a2.12 2.12 0 0 0 1.595-1.16z"/></svg>
+                      </div>
+                    </div>
+                    <div class="my-4 h-px bg-white/25"></div>
+                    <div><p class="text-[.65rem] font-semibold tracking-[.16em] text-white/60">特性</p><p class="mt-2 text-sm font-semibold leading-6 text-white/95">{{ perfume.shortDescription }}</p></div>
+                    <div class="mt-4"><p class="text-[.65rem] font-semibold tracking-[.16em] text-white/60">香氣介紹</p><p class="mt-2 text-sm leading-6 text-white/80">{{ perfume.details }}</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </transition-group>
+
+        <!-- 無資料與無搜尋結果共用 Empty State。 -->
+        <div v-else class="rounded-[2rem] border border-dashed border-monet/30 bg-white/65 px-6 py-12 text-center shadow-soft sm:py-16">
+          <div class="bottle-scene mx-auto max-w-xs" @click="sprayBottle" role="img" aria-label="可點擊噴灑的玻璃香水瓶動畫">
+            <div class="glass-bottle" style="--bottle-tint: 158,168,182"><span class="bottle-neck"></span><span class="bottle-cap"></span><span class="bottle-label">SCENT<br>ARCHIVE</span></div>
+          </div>
+          <h3 class="font-serif text-2xl">{{ perfumes.length ? '還沒有符合的香氣' : '收藏正等待第一縷香氣' }}</h3>
+          <p class="mx-auto mt-3 max-w-md text-sm leading-6 text-ink/55">{{ perfumes.length ? '換一個關鍵字或香調試試，或新增一款新的香水。' : '從第一款讓你念念不忘的香水開始，建立專屬氣味檔案。' }}</p>
+          <button type="button" @click="goToForm" :aria-expanded="isFormOpen" aria-controls="collection-form" class="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-monet px-6 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow">
+            <i data-lucide="plus" class="h-5 w-5" aria-hidden="true"></i>{{ perfumes.length ? '新增收藏' : '新增第一款香水' }}
+          </button>
+        </div>
+
+        <!-- 精品藝廊採分段揭露：預設八款，避免一次塞滿整個視窗。 -->
+        <div v-if="filteredPerfumes.length > initialDisplayCount" class="mt-10 flex justify-center">
+          <button type="button" @click="showAllPerfumes = !showAllPerfumes" class="inline-flex min-h-12 items-center gap-2 rounded-full border border-monet/25 bg-white/75 px-6 py-3 text-sm font-semibold text-monet shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-monet hover:bg-white">
+            {{ showAllPerfumes ? '收起收藏' : `顯示更多（尚有 ${filteredPerfumes.length - initialDisplayCount} 款）` }}
+            <i data-lucide="chevron-down" class="h-4 w-4 transition-transform duration-300" :class="{ 'rotate-180': showAllPerfumes }" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- 輕量橫向統計列：降低與收藏卡片競爭的視覺重量。 -->
+        <section aria-labelledby="stats-title" class="mt-14 overflow-hidden rounded-2xl border border-monet/15 bg-white/55 backdrop-blur-sm">
+          <h2 id="stats-title" class="sr-only">收藏統計</h2>
+          <div class="grid sm:grid-cols-3">
+            <article v-for="(stat, index) in stats" :key="stat.label" class="flex items-center gap-4 px-5 py-4 sm:px-6" :class="index ? 'border-t border-monet/12 sm:border-l sm:border-t-0' : ''">
+              <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-mist text-monet" aria-hidden="true"><i :data-lucide="stat.icon" class="h-4 w-4"></i></span>
+              <div class="min-w-0"><p class="text-xs font-medium text-ink/48">{{ stat.label }}</p><p class="mt-0.5 truncate font-serif text-xl text-ink">{{ stat.value }}</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <!-- 新增／編輯共用表單：預設收合，按新增或編輯後才掛載並展開。 -->
+      <transition name="form-reveal">
+      <section v-if="isFormOpen" id="collection-form" aria-labelledby="form-title" class="scroll-mt-6 rounded-[2rem] border border-monet/20 bg-white/78 p-5 shadow-soft backdrop-blur sm:p-8 lg:p-10">
+        <div class="grid gap-10 lg:grid-cols-[.72fr_1.28fr]">
+          <div>
+            <p class="mb-2 text-sm font-semibold tracking-[.18em] text-monet">{{ editingId ? 'EDIT THE MEMORY' : 'ADD A MEMORY' }}</p>
+            <h2 id="form-title" class="font-serif text-3xl sm:text-4xl">{{ editingId ? '編輯收藏' : '新增收藏' }}</h2>
+            <p class="mt-4 max-w-md text-sm leading-7 text-ink/58">記下香氣的名字、輪廓與感受。標示「必填」的欄位需完成後才能保存。</p>
+            <div class="mt-7 rounded-2xl bg-mist p-5 text-sm leading-6 text-ink/60">
+              <div class="flex gap-3"><i data-lucide="info" class="mt-0.5 h-5 w-5 shrink-0 text-water" aria-hidden="true"></i><p><strong class="text-ink/75">圖片備註：</strong>未來建立 <code class="rounded bg-white px-1.5 py-0.5">img</code> 資料夾後，可將網址改為 <code class="rounded bg-white px-1.5 py-0.5">img/香水.jpg</code>。載入失敗會自動顯示玻璃瓶。</p></div>
+            </div>
+          </div>
+
+          <form novalidate @submit.prevent="submitForm" @reset.prevent="resetForm" class="space-y-6">
+            <div v-if="showErrorSummary" ref="errorSummary" tabindex="-1" role="alert" class="rounded-2xl border border-[#B56D6D]/35 bg-[#FBF1EF] p-4 text-sm text-[#794D4D]">
+              <p class="font-semibold">請檢查尚未完成的欄位</p><p class="mt-1">錯誤提示已顯示在對應欄位下方。</p>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="brand" class="mb-2 block text-sm font-semibold">品牌 <span class="text-[#9B635E]">必填</span></label>
+                <input id="brand" ref="brandInput" v-model.trim="form.brand" :class="['field', errors.brand && 'field-error']" autocomplete="organization" placeholder="例如 Aesop" :aria-invalid="!!errors.brand" :aria-describedby="errors.brand ? 'brand-error' : null">
+                <p v-if="errors.brand" id="brand-error" class="mt-2 text-sm text-[#9B5C57]">{{ errors.brand }}</p>
+              </div>
+              <div>
+                <label for="name" class="mb-2 block text-sm font-semibold">香水名稱 <span class="text-[#9B635E]">必填</span></label>
+                <input id="name" v-model.trim="form.name" :class="['field', errors.name && 'field-error']" placeholder="例如 悟香水" :aria-invalid="!!errors.name" :aria-describedby="errors.name ? 'name-error' : null">
+                <p v-if="errors.name" id="name-error" class="mt-2 text-sm text-[#9B5C57]">{{ errors.name }}</p>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend class="mb-2 text-sm font-semibold">香調分類 <span class="text-[#9B635E]">必填</span></legend>
+              <label for="category" class="sr-only">選擇香調分類</label>
+              <!-- 下拉箭頭位置：調整 right-4；數值越大，圖示越向欄位內側移動。 -->
+              <div class="relative">
+                <select id="category" v-model="form.category" :class="['field appearance-none pr-12', errors.category && 'field-error']">
+                  <option value="">選擇香調</option>
+                  <option v-for="category in categorySuggestions" :key="category" :value="category">{{ category }}</option>
+                </select>
+                <i data-lucide="chevron-down" class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-water" aria-hidden="true"></i>
+              </div>
+              <p v-if="errors.category" class="mt-2 text-sm text-[#9B5C57]">{{ errors.category }}</p>
+            </fieldset>
+
+            <div>
+              <label for="image" class="mb-2 block text-sm font-semibold">圖片網址 <span class="font-normal text-ink/40">選填</span></label>
+              <div class="relative"><i data-lucide="image" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/35" aria-hidden="true"></i><input id="image" v-model.trim="form.image" type="url" :class="['field pl-12', errors.image && 'field-error']" placeholder="https://… 或 img/perfume.jpg" :aria-invalid="!!errors.image"></div>
+              <p v-if="errors.image" class="mt-2 text-sm text-[#9B5C57]">{{ errors.image }}</p>
+            </div>
+
+            <fieldset>
+              <legend class="mb-3 text-sm font-semibold">喜好程度 <span class="text-[#9B635E]">必填</span></legend>
+              <div class="flex w-fit gap-1" role="radiogroup" aria-label="選擇一到五星喜好程度">
+                <button v-for="star in 5" :key="star" type="button" role="radio" :aria-checked="form.rating === star" :aria-label="`${star} 顆星`" @click="form.rating = star" class="grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-petal/20">
+                  <!-- Lucide Star path 直接由 Vue 渲染，避免 createIcons 替換節點後失去響應更新。 -->
+                  <svg viewBox="0 0 24 24" class="h-6 w-6 transition-colors" :class="star <= form.rating ? 'text-[#A86E5E]' : 'text-ink/25'" :fill="star <= form.rating ? '#E6C5B8' : 'none'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.165.75a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.61 1.878l.882 5.14a.53.53 0 0 1-.77.56l-4.618-2.428a2.12 2.12 0 0 0-1.974 0l-4.618 2.428a.53.53 0 0 1-.77-.56l.882-5.14a2.12 2.12 0 0 0-.61-1.878L2.16 9.788a.53.53 0 0 1 .294-.904l5.165-.75a2.12 2.12 0 0 0 1.595-1.16z"/></svg>
+                </button>
+              </div>
+            </fieldset>
+
+            <div>
+              <label for="short-description" class="mb-2 block text-sm font-semibold">簡短介紹 <span class="text-[#9B635E]">必填</span></label>
+              <input id="short-description" v-model.trim="form.shortDescription" :class="['field', errors.shortDescription && 'field-error']" maxlength="90" placeholder="簡短的介紹這個香水吧" :aria-invalid="!!errors.shortDescription">
+              <div class="mt-2 flex justify-between gap-3"><p v-if="errors.shortDescription" class="text-sm text-[#9B5C57]">{{ errors.shortDescription }}</p><span class="ml-auto text-xs text-ink/40">{{ form.shortDescription.length }}/90</span></div>
+            </div>
+            <div>
+              <label for="details" class="mb-2 block text-sm font-semibold">詳細介紹 <span class="text-[#9B635E]">必填</span></label>
+              <textarea id="details" v-model.trim="form.details" rows="5" :class="['field resize-y', errors.details && 'field-error']" placeholder="寫下香調變化與味道的轉換" :aria-invalid="!!errors.details"></textarea>
+              <p v-if="errors.details" class="mt-2 text-sm text-[#9B5C57]">{{ errors.details }}</p>
+            </div>
+
+            <div class="flex flex-col-reverse gap-3 border-t border-monet/15 pt-6 sm:flex-row sm:justify-end">
+              <button type="reset" class="min-h-12 rounded-full border border-monet/25 px-6 py-3 font-semibold text-ink/65 transition-all duration-300 hover:border-monet hover:bg-mist">{{ editingId ? '取消編輯' : '重設表單' }}</button>
+              <button type="submit" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-monet px-7 py-3 font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#748571] hover:shadow-glow active:translate-y-0">
+                <i :data-lucide="editingId ? 'save' : 'plus'" class="h-5 w-5" aria-hidden="true"></i>{{ editingId ? '儲存變更' : '加入收藏' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+      </transition>
+    </main>
+
+    <div v-if="toast" class="fixed bottom-5 left-1/2 z-50 flex min-h-12 -translate-x-1/2 items-center gap-3 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-xl" role="status" aria-live="polite">
+      <i data-lucide="check-circle-2" class="h-5 w-5 text-petal" aria-hidden="true"></i>{{ toast }}
+    </div>
+
+    <footer class="border-t border-monet/15 px-4 py-8 text-center text-sm text-ink/45">
+      <p>這是一個放置我的香水收藏與供我紀錄收藏夾</p>
+    </footer>
+  </div>
+
+  <script>
+    const { createApp, computed, nextTick, onBeforeUnmount, onMounted, ref, watch } = Vue;
+
+    createApp({
+      setup() {
+        const STORAGE_KEY = 'collection-gallery-perfume-v1';
+        // 固定分類基準：篩選列與新增／編輯表單都只使用以下五種。
+        const SCENT_CATEGORIES = ['木質調', '果香調', '辛香調', '花香調', '皂香調'];
+
+        /* 預設收藏資料：未來若改用本機圖片，只需更換 image 為 img/檔名。 */
+        const defaultPerfumes = [
+          { id: 1, brand: 'Aesop', name: '詠香水 Hwyl', category: '木質調', rating: 5, image: 'https://www.aesop.co.jp/dw/image/v2/BCKQ_PRD/on/demandware.static/-/Sites-aesop-master-catalog/default/dwdaa22ced/images/products/FR15/Aesop_Fragrance_Hwyl_Eau_de_Parfum_100mL_Bottle_with_Carton_NGL_2000x2000px.jpg?sw=700&sh=700&sm=cut&sfrm=png&q=70&bgcolor=fffef2', tint: '138,154,134', shortDescription: '紅胡椒、白木蘭葉與羅馬洋甘菊交織的靜謐森林。', details: '煙燻木質氣息像雨後走入深林，木質香氣的清冷與明亮清新及微微的花香溫度緩慢靠近。沉著、不喧嘩，適合需要獨處與安定的日子。' },
+          { id: 2, brand: 'Aesop', name: '悟香水 Tacit', category: '果香調', rating: 4, image: 'https://www.aesop.co.jp/dw/image/v2/BCKQ_PRD/on/demandware.static/-/Sites-aesop-master-catalog/default/dwc18732d9/images/products/FR12/Aesop_Fragrance_Tacit_Eau_de_Parfum_50mL_Bottle_with_Carton_NGL_2000x2000px.jpg?sw=700&sh=700&sm=cut&sfrm=png&q=70&bgcolor=fffef2', tint: '158,168,182', shortDescription: '柑橘、羅勒、丁香構成清亮綠意。', details: '開場是俐落的柚子與清脆羅勒，隨後由岩蘭草收束為乾淨木質感。明亮卻不甜膩，像晨光落在剛澆過水的葉面。' },
+          { id: 3, brand: 'Aesop', name: '艾底希思香水 Eidesis', category: '辛香調', rating: 5, image: 'https://www.aesop.co.jp/dw/image/v2/BCKQ_PRD/on/demandware.static/-/Sites-aesop-master-catalog/default/dwf41b9d90/images/products/FR26/Aesop_Fragrance_Eidesis_Eau_de_Parfum_50mL_Bottle_with_Carton_NGL_2000x2000px.jpg?sw=700&sh=700&sm=cut&sfrm=png&q=70&bgcolor=fffef2', tint: '230,197,184', shortDescription: '苦橙、黑胡椒、乳香與檀木的深邃暖意。', details: '辛香開場逐漸融入柔滑檀木，乳香在肌膚上留下帶霧感的餘韻。內斂而有層次，像暮色中一段靠近自己的凝視。' },
+          { id: 4, brand: 'Aesop', name: '馥香水 Rōzu', category: '花香調', rating: 4, image: 'https://www.aesop.co.jp/dw/image/v2/BCKQ_PRD/on/demandware.static/-/Sites-aesop-master-catalog/default/dwe0253a40/images/products/FR20/Aesop_Fragrance_Rozu_Eau_de_Parfum_50mL_Bottle_with_Carton_NGL_2000x2000px.jpg?sw=700&sh=700&sm=cut&sfrm=png&q=70&bgcolor=fffef2', tint: '192,165,151', shortDescription: '玫瑰、苦橙、佛手柑鋪展柔暖夢境。', details: '粉質花香與香料彼此覆疊，觸感柔軟而神祕。不是明亮的花束，而是日暮時分仍留在房間裡的一層金色薄霧。' },
+          { id: 5, brand: 'Byredo', name: '返璞歸真 Blanche', category: '皂香調', rating: 4, image: 'https://www.byredo.com/cdn-cgi/image/width=auto,height=1200,fit=scale-down,gravity=auto,format=webp,quality=70/https://www.byredo.com/media/catalog/product/cache/74c1057f7991b4edb2bc7bdaa94de933/1/0/10000051_4_no_no.jpg', tint: '210,214,211', shortDescription: '潔淨白花、醛香與柔軟麝香的純粹氣息。', details: '像曬過陽光的白襯衫，乾淨皂感中藏著玫瑰與溫柔麝香。貼近肌膚、沒有侵略性，是安靜而熟悉的陪伴。' },
+          { id: 6, brand: 'Diptyque', name: '杜桑 Do Son', category: '花香調', rating: 5, image: 'https://jp.diptyqueparis.com/cdn/shop/files/Do_Son_-_EDP_3x4_d9eaa2fe-2060-4361-b492-13649d8ac991.png?v=1781530149&width=800', tint: '185,194,204', shortDescription: '晚香玉與海風交會，濃郁卻保有透明感。', details: '晚香玉的奶白花瓣被一縷海風托起，茉莉與橙花使輪廓更明亮。既有南方夜晚的馥郁，也保留微風吹拂般的空氣感。' },
+          { id: 7, brand: 'Diptyque', name: '無花果 Philosykos', category: '果香調', rating: 5, image: 'https://jp.diptyqueparis.com/cdn/shop/files/PHILOSYKOS_CAGETTE_5x6_673628b1-a95b-460f-9642-695faa9abee8.avif?v=1781530092&width=600', tint: '138,154,134', shortDescription: '從葉片、果實到樹幹，完整的描摹無花果樹。', details: '先是新鮮葉片的青綠，接著浮出無花果乳汁的柔滑，最後落在被陽光曬暖的木頭。像穿過希臘夏日的果園去往海邊。' },
+          { id: 8, brand: 'Le Labo', name: '黑茶 Thé Noir 29', category: '木質調', rating: 5, image: 'https://www.lelabofragrances.jp/cdn/shop/products/350101a.050.-_1.jpg?v=1681720367&width=700', tint: '125,139,122', shortDescription: '黑茶、無花果與乾燥煙草的沉穩層次。', details: '佛手柑與無花果帶出短暫明亮感，隨後黑茶、乾草與煙草逐漸加深。乾燥、低調，留香像翻閱一本年代久遠的書。' },
+          { id: 9, brand: 'Le Labo', name: '檀香 Santal 33', category: '木質調', rating: 4, image: 'https://www.lelabofragrances.jp/cdn/shop/products/310101a.050.-_1.jpg?v=1681720360&width=700', tint: '170,154,132', shortDescription: '檀香、雪松與皮革描繪乾燥遼闊的風景。', details: '辛香與紫羅蘭先勾勒乾燥空氣，檀香、雪松及皮革形成辨識度極高的木質輪廓。自由、粗獷，又帶著貼膚的溫暖。' },
+          { id: 10, brand: 'SHIRO', name: 'Freesia Mist', category: '果香調', rating: 4, image: 'https://shiro-shiro.jp/ec/product_images/12780/12780_1.jpg', tint: '230,197,184', shortDescription: '蘋果、杏桃與小蒼蘭般的清新花果香。', details: '果香開場明亮多汁，接著走進輕盈花束與柔白麝香。像清晨花市裡尚帶水珠的花瓣，清爽、友善，適合日常穿著。' }
+        ];
+
+        const blankForm = () => ({ brand: '', name: '', category: '', image: '', rating: 3, shortDescription: '', details: '' });
+        const normalizeCategory = category =>
+          SCENT_CATEGORIES.includes(category) ? category : SCENT_CATEGORIES[0];
+        const loadPerfumes = () => {
+          try {
+            const saved = sessionStorage.getItem(STORAGE_KEY);
+            const source = saved ? JSON.parse(saved) : defaultPerfumes;
+            return source.map(perfume => ({ ...perfume, category: normalizeCategory(perfume.category) }));
+          }
+          catch (error) { console.warn('無法讀取 sessionStorage，改用預設資料。', error); return defaultPerfumes; }
+        };
+
+        const perfumes = ref(loadPerfumes());
+        const form = ref(blankForm());
+        const errors = ref({});
+        const editingId = ref(null);
+        // 控制表單是否掛載；預設不顯示，僅由新增／編輯操作開啟。
+        const isFormOpen = ref(false);
+        const activeCategory = ref('全部');
+        const searchTerm = ref('');
+        // 與 Tailwind Grid 斷點一致，每個尺寸預設只呈現完整三排。
+        const getResponsiveColumnCount = () => {
+          const width = window.innerWidth;
+          if (width >= 1536) return 4;
+          if (width >= 1280) return 3;
+          if (width >= 640) return 2;
+          return 1;
+        };
+        const columnCount = ref(getResponsiveColumnCount());
+        const initialDisplayCount = computed(() => columnCount.value * 3);
+        const showAllPerfumes = ref(false);
+        const flippedIds = ref([]);
+        const imageErrors = ref({});
+        const toast = ref('');
+        const errorSummary = ref(null);
+        const brandInput = ref(null);
+        let toastTimer;
+        let resizeFrame;
+
+        const categorySuggestions = SCENT_CATEGORIES;
+        const filterCategories = computed(() => ['全部', ...SCENT_CATEGORIES]);
+        const filteredPerfumes = computed(() => {
+          const query = searchTerm.value.toLocaleLowerCase('zh-Hant');
+          return perfumes.value.filter(p => {
+            const inCategory = activeCategory.value === '全部' || p.category === activeCategory.value;
+            const haystack = `${p.name} ${p.brand} ${p.category} ${p.shortDescription}`.toLocaleLowerCase('zh-Hant');
+            return inCategory && (!query || haystack.includes(query));
+          });
+        });
+        const visiblePerfumes = computed(() => showAllPerfumes.value ? filteredPerfumes.value : filteredPerfumes.value.slice(0, initialDisplayCount.value));
+        const stats = computed(() => {
+          const counts = perfumes.value.reduce((acc,p) => ((acc[p.category] = (acc[p.category] || 0) + 1), acc), {});
+          const popular = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+          const average = perfumes.value.length ? (perfumes.value.reduce((sum,p) => sum + p.rating, 0) / perfumes.value.length).toFixed(1) : '0.0';
+          return [
+            { label: '總收藏數量', value: `${perfumes.value.length} 款`, note: '此分頁的香氣檔案', icon: 'library' },
+            { label: '熱門香調', value: popular ? popular[0] : '尚無資料', note: popular ? `${popular[1]} 款收藏` : '等待第一款收藏', icon: 'leaf' },
+            { label: '平均喜好評分', value: `${average} / 5`, note: '依所有收藏計算', icon: 'sparkles' }
+          ];
+        });
+        const showErrorSummary = computed(() => Object.keys(errors.value).length > 0);
+
+        const refreshIcons = () => nextTick(() => window.lucide?.createIcons({ attrs: { 'stroke-width': 1.8 } }));
+        const notify = message => { toast.value = message; clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.value = '', 2600); refreshIcons(); };
+        const goToForm = () => {
+          // 從「新增收藏」進入時先清除可能殘留的編輯狀態。
+          if (!isFormOpen.value || editingId.value) {
+            form.value = blankForm(); errors.value = {}; editingId.value = null;
+          }
+          isFormOpen.value = true;
+          nextTick(() => {
+            document.getElementById('collection-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => brandInput.value?.focus(), 420);
+            refreshIcons();
+          });
+        };
+        const markImageFailed = id => { imageErrors.value[id] = true; };
+        const toggleCardFlip = id => {
+          const index = flippedIds.value.indexOf(id);
+          index >= 0 ? flippedIds.value.splice(index, 1) : flippedIds.value.push(id);
+          refreshIcons();
+        };
+        const sprayBottle = event => {
+          const scene = event.currentTarget;
+          const bottle = scene.querySelector('.glass-bottle');
+          bottle?.classList.remove('is-shaking'); void bottle?.offsetWidth; bottle?.classList.add('is-shaking');
+          setTimeout(() => bottle?.classList.remove('is-shaking'), 430);
+          const colors = ['138,154,134','158,168,182','230,197,184'];
+          for (let i = 0; i < 10; i++) {
+            const particle = document.createElement('span'); particle.className = 'spray-particle';
+            particle.style.setProperty('--spray-x', `${(Math.random()-.5)*115}px`);
+            particle.style.setProperty('--spray-y', `${-65-Math.random()*65}px`);
+            particle.style.setProperty('--particle', colors[i % colors.length]);
+            particle.style.animationDelay = `${Math.random()*.12}s`; bottle?.appendChild(particle);
+            setTimeout(() => particle.remove(), 1100);
+          }
+        };
+
+        const validate = () => {
+          const nextErrors = {};
+          if (!form.value.brand) nextErrors.brand = '請輸入品牌名稱。';
+          if (!form.value.name) nextErrors.name = '請輸入香水名稱。';
+          if (!SCENT_CATEGORIES.includes(form.value.category)) nextErrors.category = '請選擇五種固定香調之一。';
+          if (form.value.image && !/^(https?:\/\/|img\/|\.\/img\/)/i.test(form.value.image)) nextErrors.image = '請輸入完整網址，或使用 img/檔名 的本機路徑。';
+          if (!form.value.shortDescription) nextErrors.shortDescription = '請填寫簡短介紹。';
+          if (!form.value.details) nextErrors.details = '請填寫詳細介紹。';
+          errors.value = nextErrors;
+          if (Object.keys(nextErrors).length) nextTick(() => errorSummary.value?.focus());
+          return !Object.keys(nextErrors).length;
+        };
+
+        const submitForm = () => {
+          if (!validate()) return;
+          const category = form.value.category;
+          if (editingId.value) {
+            const index = perfumes.value.findIndex(p => p.id === editingId.value);
+            if (index >= 0) perfumes.value[index] = { ...perfumes.value[index], ...form.value, category };
+            delete imageErrors.value[editingId.value]; notify('收藏已更新');
+          } else {
+            perfumes.value.unshift({ ...form.value, category, id: Date.now(), tint: '138,154,134' }); notify('新香氣已加入收藏');
+          }
+          resetForm(); activeCategory.value = '全部'; searchTerm.value = ''; refreshIcons();
+        };
+
+        const startEdit = perfume => {
+          editingId.value = perfume.id;
+          form.value = { brand: perfume.brand, name: perfume.name, category: normalizeCategory(perfume.category), image: perfume.image || '', rating: perfume.rating, shortDescription: perfume.shortDescription, details: perfume.details };
+          errors.value = {}; isFormOpen.value = true;
+          nextTick(() => {
+            document.getElementById('collection-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => brandInput.value?.focus(), 420);
+            refreshIcons();
+          });
+        };
+        const resetForm = () => { form.value = blankForm(); errors.value = {}; editingId.value = null; isFormOpen.value = false; refreshIcons(); };
+
+        watch(perfumes, value => {
+          try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value)); } catch (error) { console.warn('無法保存至 sessionStorage。', error); }
+          refreshIcons();
+        }, { deep: true });
+        watch([activeCategory, searchTerm, columnCount], () => { showAllPerfumes.value = false; });
+        watch([visiblePerfumes, activeCategory, searchTerm, form, showAllPerfumes], refreshIcons, { deep: true, flush: 'post' });
+        const updateColumnCount = () => {
+          cancelAnimationFrame(resizeFrame);
+          resizeFrame = requestAnimationFrame(() => { columnCount.value = getResponsiveColumnCount(); });
+        };
+        onMounted(() => { window.addEventListener('resize', updateColumnCount, { passive: true }); refreshIcons(); });
+        onBeforeUnmount(() => { window.removeEventListener('resize', updateColumnCount); cancelAnimationFrame(resizeFrame); });
+
+        return { perfumes, form, errors, editingId, isFormOpen, activeCategory, searchTerm, initialDisplayCount, showAllPerfumes, flippedIds, imageErrors, toast, errorSummary, brandInput, categorySuggestions, filterCategories, filteredPerfumes, visiblePerfumes, stats, showErrorSummary, goToForm, markImageFailed, toggleCardFlip, sprayBottle, submitForm, startEdit, resetForm };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

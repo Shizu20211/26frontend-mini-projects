@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>島</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/index.css" />
+</head>
+
+
+<body>
+    <div class="wrapper">
+        <div class="minavbar">
+            <div class="logo">チョコミン島｡•ω•｡)っ</div>
+            <div class="grupo-botones">
+                <button class="nav-btn active">ご宿泊</button>
+                <button class="nav-btn">レストラン</button>
+                <button class="nav-btn">みんなのお部屋</button>
+                <button class="nav-btn">お問い合せ</button>
+            </div>
+            <div class="info-usuario">
+                <div class="idiomas">日本語</div>
+                <img class="icono-usuario" src="https://i.pinimg.com/736x/cc/96/36/cc96368b924402927c13f5279b900f5b.jpg"
+                    alt="user" />
+            </div>
+        </div>
+
+        <div class="main-layout">
+
+            <div class="first-layout">
+                <div class="suitable-options">
+                    <div class="container-fechas">
+                        <div class="container-inputs">
+                            <div class="input-label">
+                                <span class="label-input">いっしょに旅する人数</span>
+                                <select id="search-guests" class="custom-input">
+                                    <option value="">旅する人数</option>
+                                    <option value="1">1 名</option>
+                                    <option value="2">2 名</option>
+                                    <option value="4">4 名</option>
+                                    <option value="6">6 名</option>
+                                </select>
+                            </div>
+
+                            <div class="input-label">
+                                <span class="label-input">島へ行く日</span>
+                                <input type="date" id="search-checkin" class="custom-input" />
+                            </div>
+
+                            <div class="input-label">
+                                <span class="label-input">島を出る日</span>
+                                <input type="date" id="search-checkout" class="custom-input" />
+                            </div>
+
+                            <button id="search-btn">行こう！</button>
+                        </div>
+                    </div>
+
+                    <div class="header">
+                        <div class="text-suitiable">
+                            <h3>おすすめアイランド</h3>
+                            <h6>ようこそチョコミンとうへ</h6>
+                        </div>
+
+                        <div class="arrows-btn">
+                            <button class="arrow" id="carousel-prev">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <button class="arrow" id="carousel-next">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="carousel-wrapper">
+                        <div class="grilla-imagenes" id="image-carousel">
+                            <div class="elemento" data-id="1" data-name="ふわ雲の屋根裏宿" data-price="300">
+                                <div class="card">
+                                    <img src="https://pbs.twimg.com/media/EqFek9aVoAACywR?format=jpg&name=large"
+                                        alt="飯店" />
+                                    <div class="price">ꕤ300</div>
+                                    <div class="heart"><i class="fa-solid fa-heart"></i></div>
+                                    <div class="text-element">
+                                        <div class="text1">ふわ雲の屋根裏宿</div>
+                                        <div class="texto-estrellado"><i class="fa-solid fa-star"></i>4.8</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="elemento" data-id="2" data-name="ゆらゆら号の喫茶室" data-price="450">
+                                <img src="https://pbs.twimg.com/media/Ekxt4wZXIAE-RbS?format=jpg&name=small" alt="飯店" />
+                                <div class="price">ꕤ450</div>
+                                <div class="heart"><i class="fa-solid fa-heart"></i></div>
+                                <div class="text-element">
+                                    <div class="text1">ゆらゆら号の喫茶室</div>
+                                    <div class="texto-estrellado"><i class="fa-solid fa-star"></i> 4.9</div>
+                                </div>
+                            </div>
+                            <div class="elemento" data-id="3" data-name="いちょう坂のおいも時間" data-price="520">
+                                <img src="https://pbs.twimg.com/media/EjPf534UcAArqYS?format=jpg&name=900x900"
+                                    alt="飯店" />
+                                <div class="price">ꕤ520</div>
+                                <div class="heart"><i class="fa-solid fa-heart"></i></div>
+                                <div class="text-element">
+                                    <div class="text1">いちょう坂のおいも時間</div>
+                                    <div class="texto-estrellado"><i class="fa-solid fa-star"></i>4.7</div>
+                                </div>
+                            </div>
+                            <div class="elemento" data-id="4" data-name="月夜のきのこ切り株" data-price="600">
+                                <img src="https://pbs.twimg.com/media/G6cWs6NbwAAI_gm?format=jpg&name=large" alt="飯店" />
+                                <div class="price">ꕤ600</div>
+                                <div class="heart"><i class="fa-solid fa-heart"></i></div>
+                                <div class="text-element">
+                                    <div class="text1">月夜のきのこ切り株</div>
+                                    <div class="texto-estrellado"><i class="fa-solid fa-star"></i>5.0</div>
+                                </div>
+                            </div>
+                            <div class="elemento" data-id="5" data-name="Route まどろみ亭" data-price="350">
+                                <img src="https://pbs.twimg.com/media/GwinU6saQAASun-?format=jpg&name=medium"
+                                    alt="飯店" />
+                                <div class="price">ꕤ350</div>
+                                <div class="heart"><i class="fa-solid fa-heart"></i></div>
+                                <div class="text-element">
+                                    <div class="text1">Route まどろみ亭</div>
+                                    <div class="texto-estrellado"><i class="fa-solid fa-star"></i>4.6</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="building-container">
+                    <div class="barra-filtros">
+                        <div class="grupo-label-fltro">
+                            <button class="boton-filtro text-btn">みんなのお部屋</button>
+                            <button class="boton-filtro green">のんびりしたい夜</button>
+                            <button class="boton-filtro purple">いちばん人気</button>
+                        </div>
+                    </div>
+                    <div class="grilla-filtros" id="rooms-container"></div>
+                </div>
+            </div>
+
+            <div class="second-layout">
+                <div class="map-viewport" id="mapViewport">
+                    <div class="map-drag-layer" id="mapDragLayer">
+                        <img class="map-base-img" id="mapBaseImg"
+                            src="https://raw.githubusercontent.com/Shizu20211/img/refs/heads/gh-pages/chizu.jpg"
+                            alt="Fantasy Map" />
+                    </div>
+
+                    <div class="custom-map-pin" data-orig-x="30" data-orig-y="35">
+                        <div class="airbnb-pin">
+                            <span id="map-target-hotel">夕焼けロードの休憩所</span>
+                        </div>
+                    </div>
+                    <div class="custom-map-pin" data-orig-x="60" data-orig-y="55">
+                        <div class="airbnb-pin">
+                            <span>橙あかりのきのこ村</span>
+                        </div>
+                    </div>
+                    <div class="custom-map-pin" data-orig-x="75" data-orig-y="25">
+                        <div class="airbnb-pin">
+                            <span>星あかりの屋根裏部屋</span>
+                        </div>
+                    </div>
+
+                    <div class="map-zoom-controls">
+                        <button id="zoom-in-btn"><i class="fa-solid fa-plus"></i></button>
+                        <button id="zoom-out-btn"><i class="fa-solid fa-minus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="booking-modal" class="booking-modal">
+        <div class="modal-content">
+            <h3>島旅のしおり確認</h3>
+            <div class="modal-body">
+                <p>今回の小さなお宿：<span id="modal-room-name" style="color:#555; font-weight:700;"></span></p>
+                <p>島へ行く日：<span id="modal-checkin" style="color:#555;"></span></p>
+                <p>島を出る日：<span id="modal-checkout" style="color:#555;"></span></p>
+                <p>島で過ごす時間：<span id="modal-days" style="color:#555;"></span></p>
+                <p>おやすみ代：ꕤ<span id="modal-price" style="color:#555;"></span></p>
+                <div class="modal-total">旅のお会計：ꕤ<span id="modal-total"></span></div>
+            </div>
+            <div class="modal-buttons">
+                <button id="modal-cancel-btn">もう少し考える</button>
+                <button id="modal-confirm-btn">登島をはじめる</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const roomsData = [
+            { id: 1, name: "ふわ雲の屋根裏宿", price: 300, capacity: 2, rating: 4, reviews: 84, image: "https://pbs.twimg.com/media/EqFek9aVoAACywR?format=jpg&name=large" },
+            { id: 2, name: "ゆらゆら号の喫茶室", price: 450, capacity: 4, rating: 5, reviews: 112, image: "https://pbs.twimg.com/media/Ekxt4wZXIAE-RbS?format=jpg&name=small" },
+            { id: 3, name: "いちょう坂のおいも時間", price: 520, capacity: 6, rating: 4.5, reviews: 56, image: "https://pbs.twimg.com/media/EjPf534UcAArqYS?format=jpg&name=900x900" },
+            { id: 4, name: "月夜のきのこ切り株", price: 600, capacity: 2, rating: 3.5, reviews: 240, image: "https://pbs.twimg.com/media/G6cWs6NbwAAI_gm?format=jpg&name=large" },
+            { id: 5, name: "Route まどろみ亭", price: 350, capacity: 4, rating: 4, reviews: 39, image: "https://pbs.twimg.com/media/GwinU6saQAASun-?format=jpg&name=medium" },
+            { id: 6, name: "雨音こもれび宿", price: 600, capacity: 2, rating: 5, reviews: 0, image: "https://pbs.twimg.com/media/HCezaLGaEAAQ6lB?format=jpg&name=large" }
+        ];
+
+        const roomsContainer = document.getElementById("rooms-container");
+        const guestSelect = document.getElementById("search-guests");
+        const checkinInput = document.getElementById("search-checkin");
+        const checkoutInput = document.getElementById("search-checkout");
+        const searchBtn = document.getElementById("search-btn");
+        const bookingModal = document.getElementById("booking-modal");
+        const modalCancelBtn = document.getElementById("modal-cancel-btn");
+        const modalConfirmBtn = document.getElementById("modal-confirm-btn");
+
+        let selectedTopIslandId = null;
+
+        // 日期最小限制
+        const today = new Date().toISOString().split("T")[0];
+        if (checkinInput) checkinInput.min = today;
+        if (checkoutInput) checkoutInput.min = today;
+
+        /* Room List 動態渲染 */
+        function renderRooms(rooms) {
+            console.log(rooms);
+            if (!roomsContainer) return;
+            roomsContainer.innerHTML = ""; // 清空容器
+
+            // 讓所有房間都用同一套邏輯去跑
+            rooms.forEach(room => {
+                // ✨ 1. 精準相容 0.5 顆星的動態迴圈
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (room.rating >= i) {
+                        starsHtml += `<i class="fa-solid fa-star"></i>`;
+                    } else if (room.rating >= i - 0.5) {
+                        // 註：若圖示沒跑出來，可依妳的 FA 版本切換為 fa-star-half 或 fa-star-half-stroke
+                        starsHtml += `<i class="fa-solid fa-star-half-stroke"></i>`;
+                    } else {
+                        starsHtml += `<i class="fa-regular fa-star"></i>`;
+                    }
+                }
+
+                // ✨ 2. 渲染日文卡片（完美保留妳的日文語系與 ꕤ 符號）
+                const card = document.createElement("div");
+                card.className = "card-filtro";
+                card.innerHTML = `
+                        <img src="${room.image}" alt="${room.name}">
+                        <div class="room-info">
+                            <h3>${room.name}</h3>
+                            <div class="stars-container">${starsHtml}</div>
+                            <div>
+                                <p><i class="fa-solid fa-user-group"></i>お部屋の定員：${room.capacity} 名</p>
+                                <p><i class="fa-solid fa-dollar-sign"></i>ꕤ${room.price}/泊</p>
+                            </div>
+                            <button class="book-btn">旅の準備をする</button>
+                        </div>
+                    `;
+                card.querySelector(".book-btn").addEventListener("click", () => openBookingModal(room.id));
+                roomsContainer.appendChild(card);
+            });
+        }
+
+        function filterRooms() {
+            const guests = parseInt(guestSelect.value);
+            console.log(guests);
+            if (!guests) {
+                renderRooms(roomsData);
+                return;
+            }
+            const filtered = roomsData.filter(room => room.capacity >= guests);
+            renderRooms(filtered);
+        }
+        if (guestSelect) guestSelect.addEventListener("change", filterRooms);
+
+        /* 上方輪播卡片選取與連動 */
+        const carouselElements = document.querySelectorAll('.grilla-imagenes .elemento');
+        carouselElements.forEach(item => {
+            item.addEventListener('click', () => {
+                carouselElements.forEach(el => el.classList.remove('selected'));
+                item.classList.add('selected');
+                selectedTopIslandId = parseInt(item.getAttribute('data-id'));
+
+                const hotelName = item.getAttribute('data-name');
+                const mapTarget = document.getElementById("map-target-hotel");
+
+            });
+
+            const heartBtn = item.querySelector('.heart');
+            if (heartBtn) {
+                heartBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止泡泡事件，不觸發卡片選取
+                    heartBtn.classList.toggle('liked');
+                });
+            }
+        });
+
+        if (searchBtn) {
+            searchBtn.addEventListener("click", () => {
+                const checkin = checkinInput.value;
+                const checkout = checkoutInput.value;
+
+                if (!selectedTopIslandId) { alert("今日はどの島へ出かけますか？"); return; }
+                if (!checkin || !checkout) { alert("いつ島へ行くか、先に決めましょう"); return; }
+                if (new Date(checkout) <= new Date(checkin)) { alert("帰る日は、泊まる日のあとを選んでください。"); return; }
+
+                openBookingModal(selectedTopIslandId);
+            });
+        }
+
+        const greenBtn = document.querySelector('.boton-filtro.green');
+        const purpleBtn = document.querySelector('.boton-filtro.purple');
+        if (greenBtn) greenBtn.addEventListener('click', () => renderRooms([...roomsData].sort((a, b) => a.price - b.price)));
+        if (purpleBtn) purpleBtn.addEventListener('click', () => renderRooms([...roomsData].sort((a, b) => b.rating - a.rating)));
+
+        /* 地圖控制與動態 Pin 點追蹤 */
+        const viewport = document.getElementById('mapViewport');
+        const dragLayer = document.getElementById('mapDragLayer');
+        const mapImg = document.getElementById('mapBaseImg');
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+
+        let scale = 1.0;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let posX = 0, posY = 0;
+
+        if (viewport && dragLayer && mapImg) {
+
+            const updateMapTransform = () => {
+                const viewW = viewport.clientWidth;
+                const viewH = viewport.clientHeight;
+
+                const imgW = mapImg.offsetWidth;
+                const imgH = mapImg.offsetHeight;
+
+                const layerW = imgW * scale;
+                const layerH = imgH * scale;
+
+                let minX = viewW - layerW;
+                let maxX = 0;
+                if (layerW <= viewW) { minX = (viewW - layerW) / 2; maxX = minX; }
+
+                let minY = viewH - layerH;
+                let maxY = 0;
+                if (layerH <= viewH) { minY = (viewH - layerH) / 2; maxY = minY; }
+
+                posX = Math.min(maxX, Math.max(minX, posX));
+                posY = Math.min(maxY, Math.max(minY, posY));
+
+                // 底圖執行縮放與平移
+                dragLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+
+                // 動態逆向投影
+                const allPins = viewport.querySelectorAll('.custom-map-pin');
+                allPins.forEach(pin => {
+                    const origXPercent = parseFloat(pin.getAttribute('data-orig-x'));
+                    const origYPercent = parseFloat(pin.getAttribute('data-orig-y'));
+
+                    const pinBaseX = imgW * (origXPercent / 100);
+                    const pinBaseY = imgH * (origYPercent / 100);
+
+                    const currentX = posX + (pinBaseX * scale);
+                    const currentY = posY + (pinBaseY * scale);
+
+                    pin.style.left = `${currentX}px`;
+                    pin.style.top = `${currentY}px`;
+
+                    const innerPin = pin.querySelector('.airbnb-pin');
+                    if (innerPin) {
+                        innerPin.style.transform = 'scale(1)';
+                    }
+                });
+            };
+
+            const initMapPosition = () => {
+                scale = 1.0;
+                const viewW = viewport.clientWidth;
+                const imgW = mapImg.offsetWidth;
+
+                posX = (viewW - imgW) / 2;
+                posY = 0;
+                updateMapTransform();
+            };
+
+            // 確保底圖載入完畢再初始化
+            if (mapImg.complete) {
+                setTimeout(initMapPosition, 100);
+            } else {
+                mapImg.addEventListener('load', () => setTimeout(initMapPosition, 100));
+            }
+
+            // 縮放按鈕監聽
+            zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); if (scale < 2.5) { scale += 0.25; updateMapTransform(); } });
+            zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); if (scale > 1.0) { scale -= 0.25; updateMapTransform(); } });
+
+            // --- ✨ 以下為修正後的事件綁定邏輯 ✨ ---
+
+            // 1. 滑鼠按下事件（改用宣告內部處理函式，方便動態掛載/卸載）
+            const onMouseMove = (e) => {
+                if (!isDragging) return;
+                posX = e.clientX - startX;
+                posY = e.clientY - startY;
+                updateMapTransform();
+            };
+
+            const onMouseUp = () => {
+                if (isDragging) {
+                    isDragging = false;
+                    dragLayer.style.transition = 'transform 0.15s ease-out';
+                    updateMapTransform();
+                }
+                // 放開滑鼠時，立刻把移動與放開的監聽拔掉，避免浪費效能或干擾他人
+                viewport.removeEventListener('mousemove', onMouseMove);
+                viewport.removeEventListener('mouseup', onMouseUp);
+                viewport.removeEventListener('mouseleave', onMouseUp); // 保險：移出地圖也視同放開
+            };
+
+            viewport.addEventListener('mousedown', (e) => {
+                // 關鍵事件阻斷
+                if (e.target.closest('#search-guests') || e.target.closest('.map-zoom-controls') || e.target.closest('.custom-map-pin')) {
+                    return;
+                }
+                isDragging = true;
+                startX = e.clientX - posX;
+                startY = e.clientY - posY;
+                dragLayer.style.transition = 'none';
+
+                // 當滑鼠確實在地圖上按下時，才開始監聽移動與放開事件（全綁在 viewport 上）
+                viewport.addEventListener('mousemove', onMouseMove);
+                viewport.addEventListener('mouseup', onMouseUp);
+                viewport.addEventListener('mouseleave', onMouseUp); // 防止滑鼠滑出地圖範圍後卡住
+            });
+
+            // 2. 取代 window.resize：改用 ResizeObserver 監聽 viewport 容器本身的尺寸變化
+            // const resizeObserver = new ResizeObserver(() => {
+            //     updateMapTransform();
+            // });
+            // resizeObserver.observe(viewport);
+        }
+
+        /* MODAL 視窗與輪播按鈕邏輯  */
+        function openBookingModal(roomId) {
+            // 抓取目前選取的房間與日期
+            const room = roomsData.find(r => r.id === roomId) || roomsData[3];
+            const checkin = checkinInput.value;
+            const checkout = checkoutInput.value;
+
+            // 防呆一：根本還沒選日期就想訂房
+            if (!checkin || !checkout) {
+                alert("いつ島へ行くか、先に決めましょう!");
+                return;
+            }
+
+            // 計算天數差
+            const diffTime = new Date(checkout) - new Date(checkin);
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // 防呆二：退房日期小於或等於入住日期 (負數或 0 天)
+            if (days <= 0) {
+                alert("まだ旅が始まる前には帰れません。もう一度、登島の時間を見てみましょう。");
+                return;
+            }
+
+            //通過驗證，將正確的數值塞進 Modal 畫面中
+            document.getElementById("modal-room-name").textContent = room.name;
+            document.getElementById("modal-checkin").textContent = checkin;
+            document.getElementById("modal-checkout").textContent = checkout;
+            document.getElementById("modal-days").textContent = `${days} 日`;
+            document.getElementById("modal-price").textContent = room.price;
+            document.getElementById("modal-total").textContent = days * room.price;
+            //彈窗
+            bookingModal.style.display = "flex";
+        }
+        if (modalCancelBtn) modalCancelBtn.addEventListener("click", () => bookingModal.style.display = "none");
+        if (modalConfirmBtn) {
+            modalConfirmBtn.addEventListener("click", () => {
+                bookingModal.style.display = "none";
+                alert("お部屋の灯りをつけて、お待ちしています(^_  ̫ _^)");
+            });
+        }
+        window.addEventListener("click", e => { if (e.target === bookingModal) bookingModal.style.display = "none"; });
+
+        // 上方卡片輪播按鈕控制
+        const carousel = document.getElementById("image-carousel");
+        const nextBtn = document.getElementById("carousel-next");
+        const prevBtn = document.getElementById("carousel-prev");
+        if (nextBtn && prevBtn && carousel) {
+            nextBtn.addEventListener("click", (e) => { e.stopPropagation(); carousel.scrollBy({ left: carousel.offsetWidth / 2, behavior: "smooth" }); });
+            prevBtn.addEventListener("click", (e) => { e.stopPropagation(); carousel.scrollBy({ left: -carousel.offsetWidth / 2, behavior: "smooth" }); });
+        }
+
+        // 初始化動態渲染房間列表
+        renderRooms(roomsData);
+    </script>
+
+</body>
+
+</html>

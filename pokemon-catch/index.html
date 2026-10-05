@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon map</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #2c2c69;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background: url('https://raw.githubusercontent.com/Shizu20211/img/refs/heads/gh-pages/%E5%9F%BA%E6%8B%89%E7%A5%88.jpg') center / cover no-repeat fixed;
+        }
+
+        .container {
+            background: #ffffff54;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #0000001a;
+            text-align: center;
+            max-width: 820px;
+            min-width: 380px;
+            backdrop-filter: blur(5px);
+            transition: width 0.3s ease;
+        }
+
+        h1 {
+            color: #3b4cca;
+            margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .search-box {
+            margin-bottom: 12px;
+        }
+
+        .search-box input {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 10px 18px;
+            background-color: #ffcb05;
+            color: #3b4cca;
+            border: none;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px #00000033;
+            transition: 0.2s;
+        }
+
+        .search-box button:hover {
+            background-color: #3b4cca;
+            color: #ffcb05;
+        }
+
+        .filter-box select {
+            width: 85%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* 單張卡片樣式 */
+        .single-card {
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #3b4cca;
+            border-radius: 12px;
+            background-color: #fffde757;
+            width: 280px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .single-card h2 {
+            margin: 5px 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .single-card img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+        }
+
+        /* 💡 修正：縮小最大高度，確保 15 隻（3行）網格一定會超出並強制顯現卷軸 */
+        .scroll-wrapper {
+            max-height: 260px;
+            overflow-y: auto;
+            /* 允許垂直方向捲動 */
+            padding-right: 5px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        /* 自訂捲軸樣式，讓它更精緻 */
+        .scroll-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #3b4cca;
+            border-radius: 4px;
+        }
+
+        /* 多卡片網格樣式 (5行並排) */
+      .multi-grid {
+    display: grid;
+    /* 💡 核心修改：每張卡片最小 130px，最大平分剩餘空間 */
+    /* 130px 是根據你的總寬度 780px 扣掉間距後，剛好能排下 5 張的黃金比例 */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    padding-bottom: 15px;
+}
+        /* 小卡片樣式 */
+        .grid-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #3b4cca;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+            height: 150px;
+            /* 固定高度讓網格更整齊 */
+            box-sizing: border-box;
+        }
+
+        .grid-card:hover {
+            transform: translateY(-3px);
+            background-color: #fffde7;
+        }
+
+        .grid-card img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+        }
+
+        .grid-card .poke-id {
+            font-size: 11px;
+            color: #777;
+        }
+
+.grid-card .poke-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    margin: 2px 0;
+    text-transform: capitalize;
+    /* 以下確保名字太長時會優雅地顯示點點點，不會撐破卡片 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center; /* 讓名字置中更美觀 */
+}
+        /* 美化屬性標籤 */
+        .type-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 1px;
+            border-radius: 10px;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-text {
+            color: #333;
+            font-size: 14px;
+            padding: 10px;
+            grid-column: span 5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="mainContainer">
+        <h1>Catch Pokémon!</h1>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="輸入名稱或編號（如: 25）">
+            <button id="searchBtn">Catch</button>
+        </div>
+
+        <div class="filter-box">
+            <select id="typeFilter">
+                <option value="">單選模式☆*´∀`）ﾉ * (選擇屬性開啟多選模式٩(*˙˘˙)ㅅ(˙˘˙*)و)</option>
+            </select>
+        </div>
+
+        <div id="singleCardView">
+            <div id="pokemonCard" class="single-card">
+                <p>search your pokemon</p>
+            </div>
+        </div>
+
+        <div id="multiCardView" class="scroll-wrapper" style="display: none;">
+            <div id="gridContainer" class="multi-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // 屬性對照表
+        const Types = {
+            "normal": { "zh": "一般", "color": "#A8A77A" },
+            "fighting": { "zh": "格鬥", "color": "#C22E28" },
+            "flying": { "zh": "飛行", "color": "#A98FF3" },
+            "poison": { "zh": "毒", "color": "#A33EA1" },
+            "ground": { "zh": "地面", "color": "#E2BF65" },
+            "rock": { "zh": "岩石", "color": "#B6A136" },
+            "bug": { "zh": "蟲", "color": "#A6B91A" },
+            "ghost": { "zh": "幽靈", "color": "#735797" },
+            "steel": { "zh": "鋼", "color": "#B7B7CE" },
+            "fire": { "zh": "火", "color": "#EE8130" },
+            "water": { "zh": "水", "color": "#6390F0" },
+            "grass": { "zh": "草", "color": "#7AC74C" },
+            "electric": { "zh": "電", "color": "#F7D02C" },
+            "psychic": { "zh": "超能力", "color": "#F95587" },
+            "ice": { "zh": "冰", "color": "#96D9D6" },
+            "dragon": { "zh": "龍", "color": "#6F35FC" },
+            "dark": { "zh": "惡", "color": "#705746" },
+            "fairy": { "zh": "妖精", "color": "#D685AD" }
+        }
+
+        // 綁定 HTML 元素
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const pokemonCard = document.getElementById('pokemonCard');
+        const typeFilter = document.getElementById('typeFilter');
+        const mainContainer = document.getElementById('mainContainer');
+        const singleCardView = document.getElementById('singleCardView');
+        const multiCardView = document.getElementById('multiCardView');
+        const gridContainer = document.getElementById('gridContainer');
+
+        // 滾動分頁控制變數
+        let currentTypePokemonList = [];
+        let loadedCount = 0;             
+        const batchSize = 15;            
+        let isLoadingBatch = false;       // 防止重複觸發
+
+        // 閒置機制變數
+        let idleTimer;
+        const idleTimeLimit = 3 * 60 * 1000;
+
+        // 初始化屬性選單
+        function initTypeOptions() {
+            Object.keys(Types).forEach(key => {typeFilter.innerHTML += `<option value="${key}">${Types[key].zh}</option>`;});
+        }
+
+        function generateTypeBadges(apiTypes) {
+            return apiTypes.map(t => {
+                 const typeName = t.type.name;
+                const zhName = Types[typeName]?.zh || typeName;
+                const color = Types[typeName]?.color || '#ccc';
+                return `<span class="type-badge" style="background-color: ${color};">${zhName}</span>`;
+            }).join('');
+        }
+
+        // 閒置重置
+        function resetToDefault() {
+            console.log("自動重置回超能妙喵！");
+            typeFilter.value = "";
+            searchInput.value = 'meowstic-female';
+            getPokemonData('meowstic-female');
+        }
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(resetToDefault, idleTimeLimit);
+        }
+
+        document.onmousemove = resetIdleTimer;
+        document.onkeydown = resetIdleTimer;
+        document.onclick = resetIdleTimer;
+
+        // 【單圖模式】
+        async function getPokemonData(nameOrId) {
+            multiCardView.style.display = 'none';
+            singleCardView.style.display = 'block';
+            mainContainer.style.width = '350px';
+
+            pokemonCard.innerHTML = `<p>Loading...</p>`;
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${nameOrId.toLowerCase()}`);
+                if (!response.ok) { throw new Error('找不到該寶可夢( ߹꒳߹ )'); }
+                const data = await response.json();
+
+                const name = data.name.toUpperCase();
+                const id = data.id;
+                const imageUrl = data.sprites.front_default || data.sprites.other['official-artwork'].front_default;
+                const badgesHTML = generateTypeBadges(data.types);
+
+                pokemonCard.innerHTML = `
+                    <div>#${String(id).padStart(3, '0')}</div>
+                    <img src="${imageUrl}" alt="${name}" />
+                    <h2>${name}</h2>
+                    <div>${badgesHTML}</div>
+                `;
+            } catch (error) {
+                console.error(error);
+                pokemonCard.innerHTML = `<p style="color: red;">發生錯誤: ${error.message}</p>`;
+            }
+        }
+
+        // 增量加載後續的寶可夢
+        async function loadNextBatch() {
+            if (isLoadingBatch || loadedCount >= currentTypePokemonList.length) return;
+            isLoadingBatch = true;
+
+            // 建立加載中提示
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-text';
+            loadingIndicator.innerText = '正在解鎖更多寶可夢...( •̀ ̫ -︎︎ ) ੭';
+            gridContainer.appendChild(loadingIndicator);
+
+            // 算出這次要撈哪幾隻
+            const nextBatchData = currentTypePokemonList.slice(loadedCount, loadedCount + batchSize);
+
+            try {
+                await Promise.all(nextBatchData.map(async (p) => {
+                    const detailRes = await fetch(p.pokemon.url);
+                    const d = await detailRes.json();
+
+                    const img = d.sprites.front_default || d.sprites.other['official-artwork'].front_default;
+                    const badges = generateTypeBadges(d.types);
+
+                    const cardHTML = `
+                        <div class="grid-card" onclick="selectSinglePokemon('${d.name}')">
+                            <span class="poke-id">#${String(d.id).padStart(3, '0')}</span>
+                            <img src="${img || ''}" alt="${d.name}">
+                            <div class="poke-name">${d.name}</div>
+                            <div>${badges}</div>
+                        </div>
+                    `;
+                    // 插入到提示字眼之前
+                    loadingIndicator.insertAdjacentHTML('beforebegin', cardHTML);
+                }));
+
+                loadedCount += nextBatchData.length;
+            } catch (e) {
+                console.error("加載批次失敗", e);
+            } finally {
+                // 移除提示，解鎖旗標
+                loadingIndicator.remove();
+                isLoadingBatch = false;
+            }
+        }
+
+        // 監聽卷軸滾動事件
+        multiCardView.addEventListener('scroll', () => {
+            // clientHeight(可見高度) + scrollTop(已經捲動高度) >= scrollHeight(內容總高度) - 20 (緩衝區)
+            if (multiCardView.clientHeight + multiCardView.scrollTop >= multiCardView.scrollHeight - 20) {
+                loadNextBatch(); // 觸底了，抓下一波！
+            }
+        });
+
+        // 【多圖模式開關】
+        typeFilter.addEventListener('change', async () => {
+            const selectedType = typeFilter.value;
+
+            if (!selectedType) {
+                const currentSearch = searchInput.value || 'meowstic-female';
+                getPokemonData(currentSearch);
+                return;
+            }
+
+            singleCardView.style.display = 'none';
+            multiCardView.style.display = 'block';
+            mainContainer.style.width = '780px';
+            gridContainer.innerHTML = `<p class="loading-text">正在讀取屬性清單...</p>`;
+
+            // 重置滾動狀態
+            loadedCount = 0;
+            multiCardView.scrollTop = 0;
+
+            try {
+                const typeRes = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`);
+                const typeData = await typeRes.json();
+                currentTypePokemonList = typeData.pokemon;
+
+                if (currentTypePokemonList.length === 0) {
+                    gridContainer.innerHTML = `<p class="loading-text">此屬性目前沒有發現寶可夢</p>`;
+                    return;
+                }
+
+                gridContainer.innerHTML = ''; // 清空
+                await loadNextBatch(); // 渲染前幾隻
+
+            } catch (error) {
+                console.error(error);
+                gridContainer.innerHTML = `<p class="loading-text" style="color: red;">載入清單失敗...</p>`;
+            }
+        });
+
+        function selectSinglePokemon(name) {
+            searchInput.value = name;
+            typeFilter.value = "";
+            getPokemonData(name);
+        }
+
+        searchBtn.addEventListener('click', () => {
+            const keyword = searchInput.value.trim();
+            if (keyword) {
+                typeFilter.value = "";
+                getPokemonData(keyword);
+            }
+        });
+
+        // 🚀 初始化
+        initTypeOptions();
+        resetIdleTimer(); // 啟動閒置倒數
+
+        // 預設載入超能妙喵！
+        searchInput.value = 'meowstic-female';
+        getPokemonData('meowstic-female');
+    </script>
+</body>
+
+</html>

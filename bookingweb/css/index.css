@@ -1,0 +1,801 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Zen Kurenaido", 'Comic Neue', cursive, 'Onest', sans-serif;
+    background: #EBF8FF;
+    padding: 20px;
+}
+
+.wrapper {
+    max-width: 1400px;
+    margin: auto;
+    background: #FFFFFF;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(100, 150, 200, 0.1);
+}
+
+/* NAVBAR */
+.minavbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 3rem;
+}
+
+.logo {
+    font-family: 'Zen Kurenaido', cursive;
+    font-size: 2.2rem;
+    color: #FF9FCE;
+    text-shadow: 2px 2px 0px rgba(255, 159, 206, 0.2);
+}
+
+.grupo-botones {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-btn {
+    border: none;
+    background: transparent;
+    padding: .8rem 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .3s;
+    font-weight: 700;
+    color: #555;
+    font-size: 1rem;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    background: #FFF8E1;
+    border-radius: 20px;
+}
+
+.info-usuario {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icono-usuario {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #FFF8E1;
+}
+
+.idiomas {
+    padding: .6rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: .3s;
+    color: #555;
+}
+
+.idiomas:hover {
+    background: #EBF8FF;
+}
+
+/* MAIN LAYOUT */
+.main-layout {
+    display: flex;
+}
+
+.first-layout {
+    flex: 1.6;
+    min-width: 0;
+}
+
+.second-layout {
+    flex: 1;
+    min-height: 700px;
+    margin: 1rem 1rem 1rem 0;
+}
+
+/* SUITABLE OPTIONS & CAROUSEL */
+.suitable-options {
+    background: #FFF8E1;
+    margin: 1rem;
+    border-radius: 30px;
+    padding: 1.5rem;
+}
+
+.container-fechas {
+    margin-bottom: 2rem;
+}
+
+.botones-filtro {
+    display: flex;
+    gap: .5rem;
+}
+
+.botones-filtro button {
+    border: none;
+    background: transparent;
+    padding: .6rem 1.2rem;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: .3s;
+    font-weight: 700;
+    color: #555;
+}
+
+.botones-filtro button:hover,
+.botones-filtro .active {
+    background: #D8F3FF;
+    border-radius: 20px;
+}
+
+.container-inputs {
+    display: flex;
+    background: #FFFFFF;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 2px solid #EBF8FF;
+}
+
+.input-label {
+    flex: 1;
+    background: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.label-input {
+    color: #888;
+    font-size: .85rem;
+    margin-bottom: .5rem;
+    font-weight: 700;
+}
+
+.custom-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    width: 100%;
+    font-family: 'Comic Neue', cursive;
+    color: #555;
+}
+
+#search-btn {
+    border: none;
+    background: #A0E0FA;
+    color: #555;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: .3s;
+    border-radius: 20px;
+    margin: 10px;
+}
+
+#search-btn:hover {
+    background: #88D6F7;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-bottom: 1.5rem; */
+}
+
+.text-suitiable h3 {
+    font-family: 'Zen Kurenaido', cursive;
+    font-size: 1.6rem;
+    color: #FFB3D9;
+}
+
+.text-suitiable h6 {
+    color: #AAA;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.arrows-btn {
+    display: flex;
+    gap: .5rem;
+}
+
+.arrow {
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(100, 150, 200, 0.05);
+    transition: .3s;
+    color: #555;
+}
+
+.arrow i {
+    font-size: 1rem;
+}
+
+.arrow:hover {
+    transform: translateY(-3px);
+    background: #FFF8E1;
+}
+
+/* CAROUSEL SUITE */
+.carousel-wrapper {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.carousel-wrapper::before,
+.carousel-wrapper::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 0 10px 4px rgba(255, 255, 255, 0.4);
+    z-index: 5;
+    animation: particleFly 3s infinite linear;
+}
+
+.carousel-wrapper::after {
+    top: 10%;
+    left: 30%;
+    animation-delay: 1.5s;
+}
+
+@keyframes particleFly {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50px) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* ✨ 完全還原妳最愛的輪播外殼比例 */
+.grilla-imagenes {
+    display: flex;
+    gap: 1rem;
+    padding-top: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.grilla-imagenes::-webkit-scrollbar {
+    display: none;
+}
+
+/* ✨ 完全還原妳最愛的卡片元件尺寸 */
+.elemento {
+    position: relative;
+    flex: 0 0 calc((100% - 2rem) / 3);
+    transition: .3s;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(100, 150, 200, 0.08);
+    border: 3px solid #FFFFFF;
+    background: white;
+    min-width: calc((100% - 2rem) / 3);
+}
+
+
+
+.elemento:hover {
+    transform: translateY(-5px);
+    border-color: #D8F3FF;
+}
+
+/* 輪播選取狀態 */
+.elemento.selected {
+    border: 3px solid #6cd4a3 !important;
+    box-shadow: 0 8px 24px rgba(108, 212, 163, 0.25);
+}
+
+/* ✨ 還原 300px 高度，並加上 display: block 防止異常變形 */
+.grilla-imagenes img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(.85) contrast(1.1);
+}
+
+.price {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 248, 225, 0.85);
+    color: #555;
+    padding: .6rem 1rem;
+    border-radius: 999px;
+    backdrop-filter: blur(5px);
+    font-weight: 700;
+    font-size: 0.9rem;
+    z-index: 3;
+}
+
+.heart {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    border: 2px solid #FFFFFF;
+    transition: all 0.2s ease;
+    z-index: 3;
+}
+
+.heart i {
+    color: #FFB3D9;
+    transition: .25s;
+}
+
+.heart:hover i {
+    color: #FF80BF;
+}
+
+/* 收藏點選狀態 */
+.heart.liked i {
+    font-family: "Font Awesome 5 Free", "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    color: #ff4d4d !important;
+}
+
+/* ✨ 優化防禦：寬度撐滿並加上微光暗角漸層，保證文字不被圖片底色吃掉，同時允許事件穿透 */
+.text-element {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 30px 20px 20px 20px;
+    color: white;
+    box-sizing: border-box;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.text1 {
+    font-family: 'Zen Kurenaido', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.texto-estrellado {
+    margin-top: .3rem;
+    font-weight: 700;
+}
+
+/* ROOM LIST & FILTERED CARDS (2欄排版) */
+.building-container {
+    background: #EBF8FF;
+    margin: 1rem;
+    border-radius: 30px;
+    padding: 1.5rem;
+}
+
+.grilla-filtros {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.card-filtro {
+    background: white;
+    border-radius: 30px;
+    padding: 1.1rem;
+    display: flex;
+    gap: 12px;
+    box-shadow: 0 5px 15px rgba(100, 150, 200, 0.06);
+    transition: .3s;
+    position: relative;
+    width: 100%;
+    min-height: 195px;
+}
+
+.card-filtro::before {
+    content: '𖡼.𖤣𖥧𖡼.𖤣𖥧';
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: .3s;
+}
+
+.card-filtro:hover {
+    /* transform: translateY(-3px); */
+    border: 2px solid #FFF8E1;
+    /* width: calc(100% - 4px); */
+}
+
+.card-filtro:hover::before {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+.card-filtro img {
+    width: 110px;
+    height: 110px;
+    border-radius: 20px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 3px solid #FFF8E1;
+}
+
+.room-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.room-info h3 {
+    font-family: 'Zen Kurenaido', cursive;
+    margin-bottom: .4rem;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.room-info p {
+    margin: .2rem 0;
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.room-info p i {
+    margin-right: 5px;
+    width: 16px;
+    text-align: center;
+}
+
+.room-info .fa-star,
+.room-info .fa-star-half-stroke,
+.room-info .fa-star-half,
+.stars-container .fa-star,
+.stars-container .fa-star-half-stroke,
+.stars-container .fa-star-half {
+    color: #FFB3D9 !important;
+}
+
+.stars-container {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 4px;
+}
+
+.book-btn {
+    margin-top: .5rem;
+    border: none;
+    background: #FFF8E1;
+    color: #555;
+    padding: .6rem 1.2rem;
+    border-radius: 15px;
+    cursor: pointer;
+    align-self: flex-start;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: .3s;
+}
+
+.book-btn:hover {
+    background: #A0E0FA;
+}
+
+/* ==========================================
+   BARRA FILTROS (按鈕外觀樣式)
+   ========================================== */
+.barra-filtros {
+    margin-bottom: 1rem;
+}
+
+.grupo-label-fltro {
+    display: flex;
+    gap: .5rem;
+}
+
+.boton-filtro {
+    border: none;
+    padding: .6rem 1.2rem;
+    border-radius: 999px;
+    background: white;
+    cursor: pointer;
+    color: #555;
+    font-weight: 700;
+    transition: .3s;
+    box-shadow: 0 4px 10px rgba(100, 150, 200, 0.04);
+}
+
+.boton-filtro:hover {
+    background: #FFF8E1;
+}
+
+.boton-filtro.green {
+    background: #D0F7EB;
+}
+
+.boton-filtro.green:hover {
+    background: #C0F9E3;
+}
+
+.boton-filtro.purple {
+    background: #E9D9F8;
+}
+
+.boton-filtro.purple:hover {
+    background: #E1C2F8;
+}
+
+/* ==========================================
+   INTERACTIVE MAP LAYER (✨ 終極防抖定位優化)
+   ========================================== */
+.map-viewport {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+    min-height: 700px;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 4px solid #FFF8E1;
+    background: #D8F3FF;
+    user-select: none;
+}
+
+.map-drag-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    transform-origin: 0 0;
+    display: inline-block;
+    height: 100%;
+}
+
+.map-drag-layer:active {
+    cursor: grabbing;
+}
+
+.map-base-img {
+    display: block;
+    height: 100%;
+    width: auto;
+    pointer-events: none;
+}
+
+/* Pin 點相對於靜態的 .map-viewport 進行絕對物理定位 */
+.custom-map-pin {
+    position: absolute;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    /* 確保內部元件可正常 hover 與觸發點擊 */
+}
+
+.airbnb-pin {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 700;
+    box-shadow: 0 5px 20px rgba(100, 150, 200, 0.15);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: #555;
+    font-family: 'Comic Neue', cursive;
+    border: 3px solid #A0E0FA;
+    white-space: nowrap;
+    font-size: 0.9em;
+    transform-origin: center center;
+    transition: background 0.2s, transform 0.1s ease-out;
+}
+
+.airbnb-pin:hover {
+    background: #FFF8E1;
+    transform: scale(1.05) !important;
+    /* 懸停時精緻小放大 */
+}
+
+.airbnb-pin::before {
+    content: '𖡡';
+    margin-right: 2px;
+    color: #de9292;
+    font-size: 2em;
+}
+
+.map-zoom-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 30;
+}
+
+.map-zoom-controls button {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(100, 150, 200, 0.15);
+    font-size: 18px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.map-zoom-controls button:hover {
+    background: #FFF8E1;
+    transform: scale(1.08);
+}
+
+/* ==========================================
+   BOOKING MODAL STYLES (夢幻彈窗樣式)
+   ========================================== */
+.booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(160, 224, 250, 0.4);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 35px;
+    padding: 2rem;
+    box-shadow: 0 15px 40px rgba(100, 150, 200, 0.15);
+    border: 4px solid #FFF8E1;
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-content h3 {
+    font-family: 'Zen Kurenaido', cursive;
+    color: #FF9FCE;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background: #F4FCFF;
+    padding: 1.2rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+}
+
+.modal-body p {
+    font-size: 1rem;
+    color: #777;
+    font-weight: 700;
+}
+
+.modal-total {
+    margin-top: 0.5rem;
+    padding-top: 0.8rem;
+    border-top: 2px dashed #D8F3FF;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #6cd4a3;
+    text-align: right;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.modal-buttons button {
+    flex: 1;
+    border: none;
+    padding: .8rem;
+    border-radius: 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#modal-cancel-btn {
+    background: #FFEbee;
+    color: #FF8a8a;
+}
+
+#modal-cancel-btn:hover {
+    background: #FFCDCD;
+}
+
+#modal-confirm-btn {
+    background: #A0E0FA;
+    color: #555;
+}
+
+#modal-confirm-btn:hover {
+    background: #88D6F7;
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media(max-width:1180px) {
+    .grilla-filtros {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:1024px) {
+    .second-layout {
+        display: none;
+    }
+
+    .main-layout {
+        flex-direction: column;
+    }
+
+    .container-inputs {
+        flex-direction: column;
+        border-radius: 20px;
+    }
+
+    .input-label {
+        border-radius: 0;
+    }
+
+    .elemento {
+        min-width: 85%;
+    }
+}

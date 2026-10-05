@@ -1,0 +1,249 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+
+    background:
+        linear-gradient(135deg, #74abe2 0%, #5563de 100%);
+}
+
+/* 背景動畫 */
+#weatherScene {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+    transition: 1s;
+}
+
+/* 卡片 */
+
+.weather-box {
+    width: 380px;
+    background: rgba(255, 255, 255, .22);
+
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+    padding: 30px;
+
+    color: white;
+
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 搜尋區 */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#cityInput {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    outline: none;
+    font-size: 16px;
+}
+
+#searchBtn {
+    border: none;
+    border-radius: 12px;
+    background: #5563de;
+
+    color: white;
+
+    cursor: pointer;
+
+    padding: 14px 20px;
+
+    transition: .3s;
+}
+
+#searchBtn:hover {
+    transform: translateY(-2px);
+}
+
+#searchBtn:disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+
+/* 資訊區 */
+
+.all {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: .5s;
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.icon-container {
+    height: 100px;
+}
+
+#weatherIcon {
+    width: 100px;
+    height: 100px;
+    display: none;
+    transition: .5s;
+}
+
+.all p {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+
+    padding-bottom: 8px;
+    margin: 8px 0;
+}
+
+.place {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.temp {
+    color: #ffe600;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* 雨 */
+
+.rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 80px;
+
+    background: linear-gradient(transparent, rgba(255, 255, 255, .7));
+
+    animation: rainFall linear infinite;
+}
+
+@keyframes rainFall {
+    from {
+        transform:
+            translateY(-120px) translateX(0);
+    }
+
+    to {
+        transform:
+            translateY(110vh) translateX(-40px);
+    }
+}
+
+/* 雲 */
+.cloud {
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .18);
+    filter: blur(10px);
+    animation: cloudMove linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, .18);
+}
+
+.cloud::before {
+    width: 80px;
+    height: 80px;
+
+    left: 30px;
+    top: -40px;
+}
+
+.cloud::after {
+    width: 100px;
+    height: 100px;
+
+    right: 20px;
+    top: -50px;
+}
+
+@keyframes cloudMove {
+
+    from {
+        transform: translateX(-300px);
+    }
+
+    to {
+        transform: translateX(120vw);
+    }
+}
+
+/* 雪 */
+
+.snow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    opacity: .8;
+
+    animation: snowFall linear infinite;
+}
+
+@keyframes snowFall {
+    from {
+        transform: translateY(-50px);
+    }
+
+    to {
+        transform: translateY(110vh) translateX(40px);
+    }
+}
+
+/* 雷電 */
+
+.flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+}

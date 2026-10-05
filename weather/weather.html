@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/index.css" />
+    <title>天氣預報 App</title>
+    <!-- CSS -->
+    <!-- 外面引入的 -->
+    <!-- 自己撰寫的 -->
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="weatherScene"></div>
+    <div class="weather-box">
+        <div class="search-bar">
+            <input type="text" id="cityInput" placeholder="輸入城市英文，例如 Taipei">
+            <button id="searchBtn" type="button">查詢天氣</button>
+        </div>
+
+        <div class="all fade-in">
+            <div class="icon-container">
+                <img id="weatherIcon">
+            </div>
+            <p>位置：<span class="place">城市</span></p>
+            <p>氣溫：<span class="temp">--</span></p>
+            <p>狀況：<span class="wind">--</span></p>
+            <p>風速：<span class="windPower">--</span></p>
+            <p>濕度：<span class="humidity">--</span></p>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <!-- 外面引入的 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- 自己撰寫的 -->
+    <script>
+        $(function () {
+            // 載入上次城市
+            const savedCity = localStorage.getItem("lastCity");
+            if (savedCity) {
+                $("#cityInput").val(savedCity);
+                executeWeatherSearch(savedCity);
+            }
+            // 搜尋按鈕
+            $("#searchBtn").click(function () {
+                const cityName = $("#cityInput").val().trim();
+                if (!cityName) {
+                    alert("輸入城市名稱");
+                    return;
+                }
+                executeWeatherSearch(cityName);
+            });
+            // Enter 搜尋
+            $("#cityInput").keydown(function (e) {
+                if (e.key === "Enter") {
+                    $("#searchBtn").click();
+                }
+            });
+            // 清除場景
+            function clearScene() {
+                $("#weatherScene").html("").removeAttr("style");
+                $(".flash").remove();
+            }
+            // 晴天
+            function createClearSky(isDaytime) {
+                clearScene();
+                if (isDaytime) {
+                    // 白天
+                    $("#weatherScene").css({
+                        background: "linear-gradient(135deg,#56ccf2,#2f80ed)"
+                    });
+
+                    for (let i = 0; i < 5; i++) {
+                        const light = $("<div>");
+
+                        light.css({
+                            position: "absolute",
+                            width: "300px",
+                            height: "300px",
+                            borderRadius: "50%",
+                            background: "rgba(255,255,255,.12)",
+                            filter: "blur(40px)",
+                            top: Math.random() * 70 + "%",
+                            left: Math.random() * 80 + "%"
+                        });
+
+                        $("#weatherScene").append(light);
+                    }
+
+                } else {
+                    // 夜晚
+                    $("#weatherScene").css({
+                        background: "linear-gradient(135deg,#0f2027,#203a43,#2c5364)"
+                    });
+                    // 星星
+                    for (let i = 0; i < 120; i++) {
+                        const star = $("<div>");
+
+                        star.css({
+                            position: "absolute",
+                            width: "2px",
+                            height: "2px",
+                            borderRadius: "50%",
+                            background: "white",
+                            top: Math.random() * 100 + "%",
+                            left: Math.random() * 100 + "%",
+                            opacity: Math.random()
+                        });
+
+                        $("#weatherScene").append(star);
+                    }
+                    // 月亮
+                    const moon = $("<div>");
+
+                    moon.css({
+                        position: "absolute",
+                        width: "120px",
+                        height: "120px",
+                        borderRadius: "50%",
+                        background: "#fff8dc",
+                        top: "80px",
+                        right: "120px",
+                        boxShadow: "0 0 50px rgba(255,255,255,.5)"
+                    });
+
+                    $("#weatherScene").append(moon);
+                }
+            }
+            // 雲
+            function createClouds(isDaytime) {
+                clearScene();
+                if (isDaytime) {
+                    $("#weatherScene").css("background", "linear-gradient(135deg,#757f9a,#d7dde8)");
+                } else {
+                    $("#weatherScene").css("background", "linear-gradient(135deg,#1c1c1c,#434343)");
+                }
+
+                for (let i = 0; i < 8; i++) {
+                    const cloud = $("<div class='cloud'></div>");
+
+                    cloud.css({
+                        width: (180 + Math.random() * 200) + "px",
+                        height: (70 + Math.random() * 50) + "px",
+                        top: Math.random() * 60 + "%",
+                        animationDuration: (25 + Math.random() * 30) + "s"
+                    });
+
+                    $("#weatherScene").append(cloud);
+                }
+            }
+
+
+            // 雨
+            function createRain() {
+                clearScene();
+                $("#weatherScene").css("background", "linear-gradient(135deg,#4b6cb7,#182848)");
+
+                for (let i = 0; i < 180; i++) {
+                    const drop = $("<div class='rain-drop'></div>");
+                    drop.css({
+                        left: Math.random() * 100 + "%",
+                        top: Math.random() * -100 + "px",
+                        animationDuration: (0.4 + Math.random()) + "s",
+                        opacity: Math.random()
+                    });
+
+                    $("#weatherScene").append(drop);
+                }
+            }
+            // 雪
+            function createSnow() {
+                clearScene();
+                $("#weatherScene").css("background", "linear-gradient(135deg,#a1c4fd,#c2e9fb)");
+
+                for (let i = 0; i < 120; i++) {
+                    const snow = $("<div class='snow'></div>");
+                    snow.css({
+                        left: Math.random() * 100 + "%",
+                        animationDuration: (3 + Math.random() * 5) + "s",
+                        opacity: Math.random()
+                    });
+
+                    $("#weatherScene").append(snow);
+                }
+            }
+            // 雷雨
+            function createThunderstorm() {
+                createRain();
+                const flash = $("<div class='flash'></div>");
+
+                $("body").append(flash);
+
+                setInterval(() => {
+                    if (Math.random() > .75) {
+                        flash.css("opacity", .8);
+                        setTimeout(() => {
+                            flash.css("opacity", 0);
+                        }, 100);
+                    }
+                }, 3000);
+            }
+            // 場景切換
+            function setWeatherScene(type, isDaytime) {
+                switch (type) {
+                    case "Clear": createClearSky(isDaytime);
+                        break;
+                    case "Clouds":
+                        createClouds(isDaytime);
+                        break;
+
+                    case "Rain":
+                    case "Drizzle":
+                        createRain();
+                        break;
+
+                    case "Thunderstorm":
+                        createThunderstorm();
+                        break;
+
+                    case "Snow":
+                        createSnow();
+                        break;
+
+                    default:
+                        createClearSky(isDaytime);
+                }
+            }
+            // 查詢天氣
+            function executeWeatherSearch(cityName) {
+                $.ajax({
+                    url: "https://weather-api-proxy.jean890712.workers.dev/",
+                    type: "GET",
+                    data: {
+                        city: cityName
+                    },
+                    beforeSend() {
+                        $("#searchBtn").prop("disabled", true).text("查詢中...");
+                    },
+
+                    success(data) {
+                        localStorage.setItem("lastCity", cityName);
+
+                        $(".all").removeClass("fade-in").addClass("fade-out");
+                        const now = data.dt;
+                        const sunrise = data.sys.sunrise;
+                        const sunset = data.sys.sunset;
+                        const isDaytime = now >= sunrise && now < sunset;
+
+                        setWeatherScene(data.weather[0].main, isDaytime);
+
+                        setTimeout(() => {
+                            $(".place").text(data.name + ", " + data.sys.country);
+                            $(".temp").text(data.main.temp + " °C");
+                            $(".wind").text(data.weather[0].description);
+                            $(".windPower").text(data.wind.speed + " m/s");
+                            $(".humidity").text(data.main.humidity + "%");
+                            // icon
+                            const iconUrl = "https://openweathermap.org/img/wn/" + data.weather[0].icon + "@2x.png";
+
+                            $("#weatherIcon").attr("src", iconUrl).show();
+                            // 場景
+                            setWeatherScene(data.weather[0].main, isDaytime
+                            );
+
+                            $(".all").removeClass("fade-out").addClass("fade-in");
+                        }, 250);
+                    },
+
+                    error() {
+                        alert("找不到城市或 API Key 錯誤");
+                    },
+                    complete() {
+                        $("#searchBtn").prop("disabled", false).text("查詢天氣");
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
