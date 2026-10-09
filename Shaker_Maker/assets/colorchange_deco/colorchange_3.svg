@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_圖層_2" data-name="圖層 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525.6 525.6">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        stroke-width: 13.6px;
+      }
+
+      .cls-2 {
+        fill: #c30d23;
+      }
+
+      .cls-3 {
+        fill: #eacaca;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g id="_圖層_1-2" data-name="圖層 1">
+    <g>
+      <rect class="cls-3" x="6.8" y="6.8" width="512" height="512"/>
+      <line class="cls-1" x1="44.47" y1="44.47" x2="481.13" y2="481.13"/>
+      <line class="cls-1" x1="481.13" y1="44.47" x2="44.47" y2="481.13"/>
+      <rect class="cls-2" x="197.72" y="197.72" width="130.17" height="130.17"/>
+      <rect class="cls-4" x="6.81" y="401.65" width="117.15" height="117.15"/>
+      <rect class="cls-4" x="6.81" y="6.8" width="117.15" height="117.15"/>
+      <rect class="cls-4" x="401.65" y="401.65" width="117.15" height="117.15"/>
+      <rect class="cls-4" x="401.65" y="6.8" width="117.15" height="117.15"/>
+    </g>
+  </g>
+</svg>

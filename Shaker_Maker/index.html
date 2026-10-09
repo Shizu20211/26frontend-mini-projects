@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>記憶萬花筒</title>
+    <link rel="icon" type="image/png" href="./assets/deco/deco_4.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="./physics.js"></script>
+    <script defer src="./main.js"></script>
+    <script defer src="./uploads.js"></script>
+    <script defer src="./recolor-assets.js"></script>
+    <script defer src="./recolor.js"></script>
+    <script defer src="./shake.js"></script>
+    <script defer src="./buttons.js"></script>
+    <script defer src="./collection-export.js"></script>
+  </head>
+
+  <body>
+    <svg class="glass-filter-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <filter
+          id="matte-glass-rim"
+          x="-10%"
+          y="-10%"
+          width="120%"
+          height="120%"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.018 0.025"
+            numOctaves="1"
+            seed="8"
+            result="grain"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="grain"
+            scale="0.7"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </defs>
+    </svg>
+    <main class="app">
+      <img
+        id="background"
+        class="app-background"
+        src="./assets/background-preview/full_bg.png"
+        alt=""
+      />
+      <header class="topbar">
+        <div class="brand">
+          <p>NOSTALGIC SHAKER MAKER</p>
+          <h1>記憶萬花筒<span>把記憶裡的素材做成萬花筒收藏起來吧(*ﾟ▽ﾟ)ﾉ</span></h1>
+        </div>
+        <div class="picker">
+          <span class="eyebrow">BACKGROUND / 背景</span>
+          <div id="backgroundOptions" class="options" role="group" aria-label="選擇背景"></div>
+        </div>
+        <div class="picker">
+          <span class="eyebrow">CONTAINER / 容器</span>
+          <div id="machineOptions" class="options" role="group" aria-label="選擇容器"></div>
+        </div>
+        <button id="resetButton" class="reset" type="button">重置</button>
+        <button id="doneButton" class="primary-button" type="button" disabled>完成製作</button>
+      </header>
+      <div class="workspace">
+        <aside class="panel collection">
+          <header>
+            <p class="eyebrow">MEMORIES TREASURES</p>
+            <h2>素材收藏庫</h2>
+            <p>把記憶裡的小物打包起帶走吧</p>
+          </header>
+          <div class="custom-upload">
+            <button id="uploadButton" type="button">＋ 匯入自己的小物</button>
+            <input id="uploadInput" type="file" accept="image/png,image/webp" hidden />
+            <p id="uploadHint">PNG／WebP · 5MB 以內<br />圖片僅在本次製作使用。</p>
+          </div>
+          <div id="collection" class="collection-list"></div>
+
+          <footer>COLLECTION · 04</footer>
+        </aside>
+        <section class="stage" aria-label="容器編輯區">
+          <div class="stage-caption">
+            <span id="modeLabel">01 / DESIGN MODE</span>
+            <p id="stageInstruction">把喜歡的小物帶回家</p>
+          </div>
+          <div class="machine-viewport">
+            <div id="machine" class="machine">
+              <img id="machineBack" class="machine-layer machine-back" alt="" />
+              <svg
+                id="ropeLayer"
+                class="rope-layer"
+                viewBox="0 0 1000 1000"
+                aria-hidden="true"
+                hidden
+              ></svg>
+              <div id="items" class="editable-item-layer"></div>
+              <img id="machineFrame" class="machine-layer machine-frame" alt="" />
+              <img id="machineFront" class="machine-layer machine-front" alt="" />
+              <svg
+                id="selection"
+                class="selection-overlay"
+                viewBox="0 0 1000 1000"
+                hidden
+                aria-hidden="true"
+              >
+                <polygon id="selectionShape" />
+              </svg>
+            </div>
+            <div
+              id="shakeArea"
+              class="shake-area"
+              role="group"
+              aria-label="搖動操作區，拖曳或使用方向鍵與空白鍵"
+              hidden
+            ></div>
+          </div>
+          <div id="shakeActions" class="shake-actions" hidden>
+            <button id="shakeButton" class="primary-button" type="button">搖一搖</button>
+            <button id="keepButton" type="button">收藏現在的樣子</button>
+            <button id="restoreButton" type="button">回到原本排列</button>
+            <button id="editButton" type="button">返回編輯</button>
+          </div>
+          <p id="status" class="status" role="status" aria-live="polite">
+            從左側選擇素材，開始製作。
+          </p>
+        </section>
+        <aside class="panel inspector">
+          <header>
+            <p class="eyebrow">MAKE IT YOURS</p>
+            <h2>選取的素材</h2>
+          </header>
+          <div class="inspector-content">
+            <div id="emptySelection" class="empty-selection">
+              <span aria-hidden="true">＋</span>
+              <p>選取素材後，<br />在這裡調整。</p>
+            </div>
+            <div id="selectedItem" hidden>
+              <img id="itemPreview" class="item-preview" alt="" />
+              <h3 id="itemName"></h3>
+              <p>在容器裡拖曳，找到喜歡的位置。</p>
+              <fieldset id="decoColorControls" class="deco-color-controls" hidden>
+                <legend>小物顏色</legend>
+                <div id="decoColorInputs"></div>
+                <button id="decoOriginalButton" type="button">恢復原色</button>
+              </fieldset>
+              <fieldset id="transformControls" class="transform-controls">
+                <label class="control-label" for="sizeInput"
+                  >大小 <output id="sizeValue" for="sizeInput">100%</output></label
+                >
+                <div class="range-control">
+                  <button id="sizeDown" type="button" aria-label="縮小 10%">−</button
+                  ><input
+                    id="sizeInput"
+                    type="range"
+                    min="40"
+                    max="180"
+                    step="1"
+                    value="100"
+                  /><button id="sizeUp" type="button" aria-label="放大 10%">＋</button>
+                </div>
+                <label class="control-label" for="rotationInput"
+                  >旋轉 <output id="rotationValue" for="rotationInput">0°</output></label
+                >
+                <div class="range-control">
+                  <button id="rotateLeft" type="button" aria-label="向左旋轉 15 度">
+                    <span class="turn-symbol" aria-hidden="true">↺</span></button
+                  ><input
+                    id="rotationInput"
+                    type="range"
+                    min="-180"
+                    max="180"
+                    step="1"
+                    value="0"
+                  /><button id="rotateRight" type="button" aria-label="向右旋轉 15 度">
+                    <span class="turn-symbol" aria-hidden="true">↻</span>
+                  </button>
+                </div>
+                <div class="control-label">圖層 <span id="layerValue"></span></div>
+                <div class="layer-control">
+                  <button id="layerBack" type="button">後移一層</button
+                  ><button id="layerForward" type="button">前移一層</button>
+                </div>
+              </fieldset>
+              <fieldset id="motionControls" class="motion-controls" aria-describedby="motionHint">
+                <legend>動態設定</legend>
+                <div class="motion-options">
+                  <label
+                    ><input type="radio" name="motionType" value="fall" /><span
+                      ><b aria-hidden="true">↓</b> Fall <small>落下</small></span
+                    ></label
+                  >
+                  <label
+                    ><input type="radio" name="motionType" value="float" /><span
+                      ><b aria-hidden="true">𓂃</b> Float <small>漂浮</small></span
+                    ></label
+                  >
+                  <label
+                    ><input type="radio" name="motionType" value="hang" /><span
+                      ><b aria-hidden="true">⌇</b> Hang <small>懸掛</small></span
+                    ></label
+                  >
+                </div>
+                <p id="motionHint" class="motion-hint">只設定動態；製作時小物保持靜止</p>
+              </fieldset>
+              <div id="hangSettings" hidden>
+                <p class="control-label">懸吊線條</p>
+                <div
+                  id="hangOptions"
+                  class="hang-options"
+                  role="group"
+                  aria-label="選擇懸吊線條"
+                ></div>
+                <div class="hang-color-control">
+                  <label for="hangColor">線條顏色</label
+                  ><input id="hangColor" type="color" value="#756f7c" /><button
+                    id="hangOriginal"
+                    type="button"
+                    aria-pressed="true"
+                  >
+                    原色
+                  </button>
+                </div>
+                <output id="hangColorValue" for="hangColor">原色</output>
+              </div>
+              <button id="deleteButton" class="delete" type="button">移除小物</button>
+            </div>
+          </div>
+          <footer><span id="itemCount">0</span> 件小物 · 製作中</footer>
+        </aside>
+      </div>
+    </main>
+    <aside class="rotate-notice">
+      <span aria-hidden="true">↻</span>
+      <h2>請將手機橫向觀看</h2>
+      <p>讓你的小小收藏，有更多空間。</p>
+    </aside>
+  </body>
+</html>

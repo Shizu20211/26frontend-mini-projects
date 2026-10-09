@@ -1,0 +1,13 @@
+{
+  "name": "nostalgic-shaker-maker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "記憶萬花筒：原生 HTML、CSS、JavaScript 製作與 PNG 收藏",
+  "scripts": {
+    "test": "node scripts/check.cjs && node tests/physics.test.cjs && node tests/custom-footprint.test.cjs && node tests/recolor.test.cjs && node tests/ropes.test.cjs && node scripts/generate-export-assets.cjs --check",
+    "generate:assets": "node scripts/generate-export-assets.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
